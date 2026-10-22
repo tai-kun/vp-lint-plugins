@@ -1,4 +1,5 @@
 import { defineRule } from "vite-plus/lint/plugins";
+import type { ESTree, Visitor } from "vite-plus/lint/plugins";
 
 import {
   hasBlankLine,
@@ -7,7 +8,17 @@ import {
   getInsertionTarget,
 } from "./blank-line.js";
 
-const CONTROL_STATEMENT_TYPES = new Set([
+type ControlStatement =
+  | ESTree.DoWhileStatement
+  | ESTree.ForInStatement
+  | ESTree.ForOfStatement
+  | ESTree.ForStatement
+  | ESTree.IfStatement
+  | ESTree.SwitchStatement
+  | ESTree.TryStatement
+  | ESTree.WhileStatement;
+
+const CONTROL_STATEMENT_TYPES: ReadonlySet<ControlStatement["type"]> = new Set([
   "DoWhileStatement",
   "ForInStatement",
   "ForOfStatement",
@@ -36,7 +47,7 @@ const blankLineAfterControlBlock = defineRule({
   create(context) {
     const sourceCode = context.sourceCode;
 
-    function checkNode(node) {
+    function checkNode(node: ESTree.Node): void {
       const nextStatement = getNextStatement(node);
       if (nextStatement === null || nextStatement.type === "EmptyStatement") {
         return;
@@ -56,7 +67,7 @@ const blankLineAfterControlBlock = defineRule({
       });
     }
 
-    const visitors = {};
+    const visitors: Visitor = {};
     for (const type of CONTROL_STATEMENT_TYPES) {
       visitors[type] = checkNode;
     }

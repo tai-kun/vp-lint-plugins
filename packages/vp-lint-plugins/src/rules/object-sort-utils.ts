@@ -1,4 +1,42 @@
-function getLineStarts(text) {
+import type { ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
+
+type SortableObject = ESTree.ObjectExpression | ESTree.ObjectPattern;
+
+type SortableProperty = SortableObject["properties"][number];
+
+interface SortPlanOptions {
+  /**
+   * 末尾の RestElement を許可するかどうかです。
+   */
+  allowRest?: boolean;
+
+  /**
+   * 1 行のオブジェクトを複数行に整形するかどうかです。
+   */
+  forceMultiline?: boolean;
+}
+
+interface SortUnit {
+  endLine: number;
+  name: string | null;
+  property: SortableProperty;
+  startLine: number;
+  text: string;
+}
+
+type NamedSortUnit = SortUnit & { name: string };
+
+type SortPlan =
+  | {
+      needsFix: false;
+      replacement: null;
+    }
+  | {
+      needsFix: true;
+      replacement: string;
+    };
+
+function getLineStarts(text: string): number[] {
   const starts = [0];
   for (let index = 0; index < text.length; index += 1) {
     if (text[index] === "\n") {
@@ -9,20 +47,20 @@ function getLineStarts(text) {
   return starts;
 }
 
-function getLineIndent(text, lineStarts, line) {
+function getLineIndent(text: string, lineStarts: readonly number[], line: number): string {
   const start = lineStarts[line - 1] ?? 0;
   const match = /^[ \t]*/u.exec(text.slice(start));
 
-  return match === null ? "" : match[0];
+  return match?.[0] ?? "";
 }
 
-function getPropertyName(property) {
-  if (property.type !== "Property" || property.computed === true || property.kind !== "init") {
+function getPropertyName(property: SortableProperty): string | null {
+  if (property.type !== "Property" || property.computed || property.kind !== "init") {
     return null;
   }
 
   const key = property.key;
-  let name;
+  let name: string;
   if (key.type === "Identifier") {
     name = key.name;
   } else if (
@@ -37,16 +75,15 @@ function getPropertyName(property) {
   return name === "__proto__" ? null : name;
 }
 
-function isSortableObject(node, allowRest) {
+function isSortableObject(node: SortableObject, allowRest: boolean): boolean {
   if (node.properties.length < 2) {
     return false;
   }
 
-  const names = new Set();
-  for (let index = 0; index < node.properties.length; index += 1) {
-    const property = node.properties[index];
+  const names = new Set<string>();
+  for (const [index, property] of node.properties.entries()) {
     if (property.type === "RestElement") {
-      if (allowRest !== true || index !== node.properties.length - 1) {
+      if (!allowRest || index !== node.properties.length - 1) {
         return false;
       }
 
@@ -64,7 +101,7 @@ function isSortableObject(node, allowRest) {
   return true;
 }
 
-function compareNames(left, right) {
+function compareNames(left: string, right: string): number {
   if (left.length !== right.length) {
     return left.length - right.length;
   }
@@ -82,13 +119,14 @@ function compareNames(left, right) {
   return left < right ? -1 : 1;
 }
 
-function compareUnits(left, right) {
+function compareUnits(left: NamedSortUnit, right: NamedSortUnit): number {
   return compareNames(left.name, right.name);
 }
 
-function sortGroup(group) {
-  const sortable = group.filter((unit) => unit.sortable === true).sort(compareUnits);
-  const rest = group.filter((unit) => unit.sortable === false);
+function sortGroup(group: readonly SortUnit[]): SortUnit[] {
+  const sortable = group.filter((unit): unit is NamedSortUnit => unit.name !== null);
+  sortable.sort(compareUnits);
+  const rest = group.filter((unit) => unit.name === null);
 
   return [...sortable, ...rest];
 }
@@ -102,7 +140,11 @@ function sortGroup(group) {
  *
  * 並び替えが安全でない場合は null を返します。
  */
-function getSortPlan(node, sourceCode, options = {}) {
+function getSortPlan(
+  node: SortableObject,
+  sourceCode: SourceCode,
+  options: SortPlanOptions = {},
+): SortPlan | null {
   const { allowRest = false, forceMultiline = true } = options;
   if (!isSortableObject(node, allowRest)) {
     return null;
@@ -111,16 +153,18 @@ function getSortPlan(node, sourceCode, options = {}) {
   const source = sourceCode.text;
   const lineStarts = getLineStarts(source);
   const lineIndent = getLineIndent(source, lineStarts, node.loc.start.line);
-  /**
-   * @type {Array<{ range: [number, number], loc: { start: { line: number }, end: { line: number } } }>}
-   */
   const comments = sourceCode
     .getAllComments()
     .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
-  const inlineStart = node.properties[0].loc.start.line === node.loc.start.line;
+  const firstProperty = node.properties[0];
+  if (firstProperty === undefined) {
+    return null;
+  }
+
+  const inlineStart = firstProperty.loc.start.line === node.loc.start.line;
   const singleLine = node.loc.start.line === node.loc.end.line;
 
-  const units = [];
+  const units: SortUnit[] = [];
   if (inlineStart) {
     if (comments.length > 0) {
       return null;
@@ -133,34 +177,38 @@ function getSortPlan(node, sourceCode, options = {}) {
         text: source.slice(property.range[0], property.range[1]),
         endLine: property.loc.end.line,
         property,
-        sortable: !isRest,
         startLine: property.loc.start.line,
       });
     }
   } else {
-    let previousProperty = null;
+    let previousProperty: SortableProperty | null = null;
     for (const property of node.properties) {
-      const boundary = previousProperty === null ? node.range[0] + 1 : previousProperty.range[1];
+      const previous = previousProperty;
+      const boundary = previous === null ? node.range[0] + 1 : previous.range[1];
       const candidates = comments.filter(
         (comment) => comment.range[0] >= boundary && comment.range[1] <= property.range[0],
       );
 
       if (
-        previousProperty !== null &&
+        previous !== null &&
         comments.some(
           (comment) =>
-            comment.loc.start.line === previousProperty.loc.end.line &&
-            comment.range[0] >= previousProperty.range[1] &&
+            comment.loc.start.line === previous.loc.end.line &&
+            comment.range[0] >= previous.range[1] &&
             comment.range[1] <= property.range[0],
         )
       ) {
         return null;
       }
 
-      const attached = [];
+      const attached: Comment[] = [];
       let expectedLine = property.loc.start.line;
       for (let index = candidates.length - 1; index >= 0; index -= 1) {
         const comment = candidates[index];
+        if (comment === undefined) {
+          continue;
+        }
+
         if (comment.loc.end.line !== expectedLine && comment.loc.end.line !== expectedLine - 1) {
           return null;
         }
@@ -183,20 +231,23 @@ function getSortPlan(node, sourceCode, options = {}) {
 
       const first = attached[0] ?? property;
       const startLine = first.loc.start.line;
-      const unitStart = lineStarts[startLine - 1];
+      const unitStart = lineStarts[startLine - 1] ?? 0;
       const isRest = property.type === "RestElement";
       units.push({
         name: isRest ? null : getPropertyName(property),
         text: source.slice(unitStart, property.range[1]),
         endLine: property.loc.end.line,
         property,
-        sortable: !isRest,
         startLine,
       });
       previousProperty = property;
     }
 
     const lastProperty = node.properties.at(-1);
+    if (lastProperty === undefined) {
+      return null;
+    }
+
     if (
       comments.some(
         (comment) =>
@@ -207,9 +258,9 @@ function getSortPlan(node, sourceCode, options = {}) {
     }
   }
 
-  const groups = [];
-  let currentGroup = [];
-  let previousEndLine = null;
+  const groups: SortUnit[][] = [];
+  let currentGroup: SortUnit[] = [];
+  let previousEndLine: number | null = null;
   for (const unit of units) {
     if (previousEndLine !== null && unit.startLine > previousEndLine + 1) {
       groups.push(currentGroup);
@@ -233,7 +284,7 @@ function getSortPlan(node, sourceCode, options = {}) {
     }
   }
 
-  const needsFormat = forceMultiline === true && inlineStart;
+  const needsFormat = forceMultiline && inlineStart;
   if (!needsSort && !needsFormat) {
     return {
       needsFix: false,
@@ -241,7 +292,7 @@ function getSortPlan(node, sourceCode, options = {}) {
     };
   }
 
-  if (singleLine && forceMultiline !== true) {
+  if (singleLine && !forceMultiline) {
     const sortedUnits = sortGroup(units);
 
     return {

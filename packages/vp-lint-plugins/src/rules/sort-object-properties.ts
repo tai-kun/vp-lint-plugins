@@ -22,7 +22,7 @@ const sortObjectProperties = defineRule({
   },
   create(context) {
     return {
-      ObjectPattern(node) {
+      ObjectPattern(node): void {
         const plan = getSortPlan(node, context.sourceCode, {
           allowRest: true,
           forceMultiline: false,
@@ -39,7 +39,7 @@ const sortObjectProperties = defineRule({
           messageId: "sort",
         });
       },
-      ObjectExpression(node) {
+      ObjectExpression(node): void {
         const plan = getSortPlan(node, context.sourceCode);
         if (plan === null || !plan.needsFix) {
           return;

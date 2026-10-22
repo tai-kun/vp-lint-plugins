@@ -18,13 +18,13 @@ const typeLiteralPropertiesNewline = defineRule({
   },
   create(context) {
     return {
-      TSTypeLiteral(node) {
+      TSTypeLiteral(node): void {
         if (node.members.length < 2) {
           return;
         }
 
         const firstMember = node.members[0];
-        if (firstMember.loc.start.line !== node.loc.start.line) {
+        if (firstMember === undefined || firstMember.loc.start.line !== node.loc.start.line) {
           return;
         }
 

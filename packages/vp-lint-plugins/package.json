@@ -35,5 +35,8 @@
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   },
+  "peerDependencies": {
+    "vite-plus": "^1.0.0"
+  },
   "readme": "README.md"
 }

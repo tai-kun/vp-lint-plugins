@@ -1,4 +1,5 @@
 import { defineRule } from "vite-plus/lint/plugins";
+import type { ESTree, Visitor } from "vite-plus/lint/plugins";
 
 import {
   hasBlankLine,
@@ -7,7 +8,7 @@ import {
   getInsertionTarget,
 } from "./blank-line.js";
 
-const DECLARATION_TYPES = new Set([
+const DECLARATION_TYPES: ReadonlySet<string> = new Set([
   "ClassDeclaration",
   "FunctionDeclaration",
   "TSDeclareFunction",
@@ -17,7 +18,7 @@ const DECLARATION_TYPES = new Set([
   "TSTypeAliasDeclaration",
 ]);
 
-function getDeclaration(node) {
+function getDeclaration(node: ESTree.Node): ESTree.Node | null {
   if (DECLARATION_TYPES.has(node.type)) {
     return node;
   }
@@ -33,7 +34,7 @@ function getDeclaration(node) {
   return null;
 }
 
-function isOverload(declaration) {
+function isOverload(declaration: ESTree.Node): boolean {
   return (
     (declaration.type === "FunctionDeclaration" || declaration.type === "TSDeclareFunction") &&
     declaration.body === null
@@ -58,7 +59,7 @@ const blankLineAfterDeclaration = defineRule({
   create(context) {
     const sourceCode = context.sourceCode;
 
-    function checkNode(node) {
+    function checkNode(node: ESTree.Node): void {
       const declaration = getDeclaration(node);
       if (declaration === null || isOverload(declaration)) {
         return;
@@ -83,7 +84,7 @@ const blankLineAfterDeclaration = defineRule({
       });
     }
 
-    const visitors = {
+    const visitors: Visitor = {
       ClassDeclaration: checkNode,
       TSDeclareFunction: checkNode,
       TSEnumDeclaration: checkNode,

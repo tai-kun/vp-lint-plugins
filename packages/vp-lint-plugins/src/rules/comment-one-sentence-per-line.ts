@@ -1,4 +1,20 @@
 import { defineRule } from "vite-plus/lint/plugins";
+import type { Comment, Location, SourceCode } from "vite-plus/lint/plugins";
+
+interface LineInfo {
+  column: number;
+  content: string;
+  end: number;
+  line: number;
+  start: number;
+}
+
+interface SentenceFix {
+  end: number;
+  loc: Location;
+  start: number;
+  text: string;
+}
 
 const SENTENCE_END = /[。．.!?！？]$/u;
 const TRAILING_CLOSERS = /[」』】）》）〕〉］｝"'”’]+$/u;
@@ -26,31 +42,31 @@ const DIRECTIVE_PREFIXES = [
   "deno-",
 ];
 
-function isBlank(text) {
+function isBlank(text: string): boolean {
   return text.trim() === "";
 }
 
-function isDirective(text) {
+function isDirective(text: string): boolean {
   const value = text.trimStart();
 
   return DIRECTIVE_PREFIXES.some((prefix) => value.indexOf(prefix) === 0);
 }
 
-function isLabelLine(text) {
+function isLabelLine(text: string): boolean {
   const value = text.trim();
 
   return /^[^\s:：]{1,20}[:：]\s/u.test(value) || /[:：]$/u.test(value);
 }
 
-function isTag(text) {
+function isTag(text: string): boolean {
   return /^@[A-Za-z]/u.test(text.trimStart());
 }
 
-function isListOrHeading(text) {
+function isListOrHeading(text: string): boolean {
   return /^(?:[-*+]\s|\d+[.)]\s|#{1,6}\s|\|)/u.test(text.trimStart());
 }
 
-function isCodeLike(text) {
+function isCodeLike(text: string): boolean {
   const value = text.trimStart();
 
   return (
@@ -60,13 +76,13 @@ function isCodeLike(text) {
   );
 }
 
-function isSentenceEnd(text) {
+function isSentenceEnd(text: string): boolean {
   const value = text.trimEnd().replace(TRAILING_CLOSERS, "");
 
   return SENTENCE_END.test(value);
 }
 
-function needsSpace(left, right) {
+function needsSpace(left: string, right: string): boolean {
   const leftIsAscii = /[A-Za-z0-9`)]$/u.test(left);
   const leftIsWord = /[\p{L}\p{N}]$/u.test(left);
   const leftIsOperator = /[+\-*/=<>]$/u.test(left);
@@ -75,8 +91,8 @@ function needsSpace(left, right) {
   return (leftIsAscii || leftIsWord || leftIsOperator) && rightIsAscii;
 }
 
-function canContinue(current, next) {
-  if (next === null || isBlank(next.content)) {
+function canContinue(current: string, next: LineInfo): boolean {
+  if (isBlank(next.content)) {
     return false;
   }
 
@@ -94,19 +110,18 @@ function canContinue(current, next) {
   return !isDirective(current) && !isCodeLike(current);
 }
 
-function getBlockLineInfos(comment, sourceCode) {
+function getBlockLineInfos(comment: Comment, sourceCode: SourceCode): (LineInfo | null)[] {
   const raw = sourceCode.getText(comment);
-  if (raw.indexOf("\n") === -1) {
+  if (!raw.includes("\n")) {
     return [];
   }
 
   const lines = raw.split("\n");
-  const infos = [];
+  const infos: (LineInfo | null)[] = [];
   let offset = comment.range[0];
 
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index];
-    let contentStart;
+  for (const [index, line] of lines.entries()) {
+    let contentStart: number;
     let contentEnd = line.length;
 
     if (index === 0) {
@@ -119,7 +134,7 @@ function getBlockLineInfos(comment, sourceCode) {
         continue;
       }
 
-      contentStart = match.groups?.prefix.length ?? 0;
+      contentStart = match.groups?.["prefix"]?.length ?? 0;
       const closeIndex = line.indexOf("*/");
       if (closeIndex !== -1) {
         contentEnd = Math.max(contentStart, closeIndex);
@@ -139,7 +154,7 @@ function getBlockLineInfos(comment, sourceCode) {
   return infos;
 }
 
-function getLineGroupInfos(group, sourceCode) {
+function getLineGroupInfos(group: readonly Comment[], sourceCode: SourceCode): LineInfo[] {
   return group.map((comment) => {
     const raw = sourceCode.getText(comment);
     const commentPrefix = raw.slice(0, 2) === "//" ? 2 : 0;
@@ -156,13 +171,12 @@ function getLineGroupInfos(group, sourceCode) {
   });
 }
 
-function collectFixes(infos) {
-  const fixes = [];
+function collectFixes(infos: readonly (LineInfo | null)[]): SentenceFix[] {
+  const fixes: SentenceFix[] = [];
   let inExample = false;
   let inFence = false;
 
-  for (let index = 0; index < infos.length; index += 1) {
-    const info = infos[index];
+  for (const [index, info] of infos.entries()) {
     if (info === null) {
       continue;
     }
@@ -244,15 +258,19 @@ function collectFixes(infos) {
  */
 const commentOneSentencePerLine = defineRule({
   meta: {
-    docs: { description: "Enforce one sentence per comment line." },
+    docs: {
+      description: "Enforce one sentence per comment line.",
+    },
     type: "layout",
     fixable: "whitespace",
-    messages: { oneSentence: "文の終わり（。．.!? など）で改行してください。" },
+    messages: {
+      oneSentence: "文の終わり（。．.!? など）で改行してください。",
+    },
   },
   create(context) {
     const sourceCode = context.sourceCode;
 
-    function report(fixes) {
+    function report(fixes: readonly SentenceFix[]): void {
       for (const fix of fixes) {
         context.report({
           fix(fixer) {
@@ -265,9 +283,9 @@ const commentOneSentencePerLine = defineRule({
     }
 
     return {
-      "Program:exit"() {
+      "Program:exit"(): void {
         const comments = sourceCode.getAllComments();
-        let lineGroup = [];
+        let lineGroup: Comment[] = [];
 
         for (const comment of comments) {
           if (comment.type === "Line") {

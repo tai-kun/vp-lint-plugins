@@ -1,8 +1,20 @@
 import { defineRule } from "vite-plus/lint/plugins";
+import type { ESTree, SourceCode } from "vite-plus/lint/plugins";
 
 import { compareNames } from "./object-sort-utils.js";
 
-function getAttributeGroup(name) {
+interface AttributeUnit {
+  name: string;
+  text: string;
+}
+
+type NamedAttribute = ESTree.JSXAttribute & { name: ESTree.JSXIdentifier };
+
+function isNamedAttribute(attribute: ESTree.JSXAttributeItem): attribute is NamedAttribute {
+  return attribute.type === "JSXAttribute" && attribute.name.type === "JSXIdentifier";
+}
+
+function getAttributeGroup(name: string): number {
   if (/^on[A-Z].*/u.test(name)) {
     return 1;
   }
@@ -18,7 +30,7 @@ function getAttributeGroup(name) {
   return 0;
 }
 
-function compareAttributes(left, right) {
+function compareAttributes(left: AttributeUnit, right: AttributeUnit): number {
   const leftGroup = getAttributeGroup(left.name);
   const rightGroup = getAttributeGroup(right.name);
   if (leftGroup !== rightGroup) {
@@ -28,11 +40,30 @@ function compareAttributes(left, right) {
   return compareNames(left.name, right.name);
 }
 
-function getLineIndent(source, offset) {
+function getLineIndent(source: string, offset: number): string {
   const lineStart = source.lastIndexOf("\n", offset) + 1;
   const match = /^[ \t]*/u.exec(source.slice(lineStart, offset));
 
-  return match === null ? "" : match[0];
+  return match?.[0] ?? "";
+}
+
+function hasCommentBetweenAttributes(
+  attributes: readonly NamedAttribute[],
+  sourceCode: SourceCode,
+): boolean {
+  const comments = sourceCode.getAllComments();
+
+  return attributes.some((attribute, index) => {
+    const nextAttribute = attributes[index + 1];
+    if (nextAttribute === undefined) {
+      return false;
+    }
+
+    return comments.some(
+      (comment) =>
+        comment.range[0] >= attribute.range[1] && comment.range[1] <= nextAttribute.range[0],
+    );
+  });
 }
 
 /**
@@ -55,22 +86,14 @@ const sortJsxProps = defineRule({
     const sourceCode = context.sourceCode;
 
     return {
-      JSXOpeningElement(node) {
-        if (node.attributes.length < 2) {
+      JSXOpeningElement(node): void {
+        const attributes = node.attributes.filter(isNamedAttribute);
+        if (attributes.length < 2 || attributes.length !== node.attributes.length) {
           return;
         }
 
-        if (
-          node.attributes.some(
-            (attribute) =>
-              attribute.type !== "JSXAttribute" || attribute.name.type !== "JSXIdentifier",
-          )
-        ) {
-          return;
-        }
-
-        const names = new Set();
-        for (const attribute of node.attributes) {
+        const names = new Set<string>();
+        for (const attribute of attributes) {
           if (names.has(attribute.name.name)) {
             return;
           }
@@ -78,24 +101,11 @@ const sortJsxProps = defineRule({
           names.add(attribute.name.name);
         }
 
-        const comments = sourceCode.getAllComments();
-        const hasCommentBetweenAttributes = node.attributes.some((attribute, index) => {
-          if (index === node.attributes.length - 1) {
-            return false;
-          }
-
-          const nextAttribute = node.attributes[index + 1];
-
-          return comments.some(
-            (comment) =>
-              comment.range[0] >= attribute.range[1] && comment.range[1] <= nextAttribute.range[0],
-          );
-        });
-        if (hasCommentBetweenAttributes) {
+        if (hasCommentBetweenAttributes(attributes, sourceCode)) {
           return;
         }
 
-        const units = node.attributes.map((attribute) => ({
+        const units: AttributeUnit[] = attributes.map((attribute) => ({
           name: attribute.name.name,
           text: sourceCode.text.slice(attribute.range[0], attribute.range[1]),
         }));
@@ -104,8 +114,12 @@ const sortJsxProps = defineRule({
           return;
         }
 
-        const firstAttribute = node.attributes[0];
-        const lastAttribute = node.attributes.at(-1);
+        const firstAttribute = attributes[0];
+        const lastAttribute = attributes.at(-1);
+        if (firstAttribute === undefined || lastAttribute === undefined) {
+          return;
+        }
+
         const multiline = firstAttribute.loc.start.line !== lastAttribute.loc.end.line;
         const separator = multiline
           ? `\n${getLineIndent(sourceCode.text, firstAttribute.range[0])}`

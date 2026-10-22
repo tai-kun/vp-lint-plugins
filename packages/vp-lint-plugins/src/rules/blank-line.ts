@@ -1,8 +1,14 @@
+import type { Fix, Fixer, ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
+
 /**
  * 文の配列を持つ親から、その文が属する配列を取得します。
  */
-function getStatementBody(node) {
-  const parent = node.parent;
+function getStatementBody(node: ESTree.Node): readonly ESTree.Node[] | null {
+  const { parent } = node;
+  if (parent === null) {
+    return null;
+  }
+
   if (
     parent.type === "Program" ||
     parent.type === "BlockStatement" ||
@@ -19,7 +25,7 @@ function getStatementBody(node) {
   return null;
 }
 
-function getNextStatement(node) {
+function getNextStatement(node: ESTree.Node): ESTree.Node | null {
   const body = getStatementBody(node);
   if (body === null) {
     return null;
@@ -30,10 +36,10 @@ function getNextStatement(node) {
     return null;
   }
 
-  return body[index + 1];
+  return body[index + 1] ?? null;
 }
 
-function getPreviousStatement(node) {
+function getPreviousStatement(node: ESTree.Node): ESTree.Node | null {
   const body = getStatementBody(node);
   if (body === null) {
     return null;
@@ -44,7 +50,7 @@ function getPreviousStatement(node) {
     return null;
   }
 
-  return body[index - 1];
+  return body[index - 1] ?? null;
 }
 
 /**
@@ -53,7 +59,11 @@ function getPreviousStatement(node) {
  * 次の文に付くコメントがある場合は、そのコメントの前を挿入位置にします。
  * 同じ行の末尾コメントは対象外です。
  */
-function getInsertionTarget(node, nextStatement, sourceCode) {
+function getInsertionTarget(
+  node: ESTree.Node,
+  nextStatement: ESTree.Node,
+  sourceCode: SourceCode,
+): ESTree.Node | Comment {
   return (
     sourceCode
       .getAllComments()
@@ -66,11 +76,16 @@ function getInsertionTarget(node, nextStatement, sourceCode) {
   );
 }
 
-function hasBlankLine(node, target) {
+function hasBlankLine(node: ESTree.Node, target: ESTree.Node | Comment): boolean {
   return target.loc.start.line > node.loc.end.line + 1;
 }
 
-function getBlankLineFix(fixer, sourceCode, node, target) {
+function getBlankLineFix(
+  fixer: Fixer,
+  sourceCode: SourceCode,
+  node: ESTree.Node,
+  target: ESTree.Node | Comment,
+): Fix | null {
   if (target.loc.start.line === node.loc.end.line) {
     return fixer.insertTextAfterRange([node.range[1], node.range[1]], "\n\n");
   }
@@ -87,7 +102,6 @@ export {
   hasBlankLine,
   getBlankLineFix,
   getNextStatement,
-  getStatementBody,
   getInsertionTarget,
   getPreviousStatement,
 };

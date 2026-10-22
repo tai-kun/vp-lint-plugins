@@ -1,26 +1,31 @@
-import { definePlugin } from "vite-plus/lint/plugins";
+import { existsSync } from "node:fs";
+import { registerHooks } from "node:module";
+import { fileURLToPath } from "node:url";
 
-import blankLineAfterControlBlock from "./oxlint-plugins/blank-line-after-control-block.js";
-import blankLineAfterDeclaration from "./oxlint-plugins/blank-line-after-declaration.js";
-import blankLineBeforeReturn from "./oxlint-plugins/blank-line-before-return.js";
-import commentOneSentencePerLine from "./oxlint-plugins/comment-one-sentence-per-line.js";
-import objectPropertiesNewline from "./oxlint-plugins/object-properties-newline.js";
-import sortImportExportSpecifiers from "./oxlint-plugins/sort-import-export-specifiers.js";
-import sortJsxProps from "./oxlint-plugins/sort-jsx-props.js";
-import sortObjectProperties from "./oxlint-plugins/sort-object-properties.js";
-import typeLiteralPropertiesNewline from "./oxlint-plugins/type-literal-properties-newline.js";
+const sourceRoot = new URL("../packages/vp-lint-plugins/src/", import.meta.url).href;
 
-export default definePlugin({
-  meta: { name: "project" },
-  rules: {
-    "sort-jsx-props": sortJsxProps,
-    "sort-object-properties": sortObjectProperties,
-    "blank-line-before-return": blankLineBeforeReturn,
-    "object-properties-newline": objectPropertiesNewline,
-    "blank-line-after-declaration": blankLineAfterDeclaration,
-    "comment-one-sentence-per-line": commentOneSentencePerLine,
-    "sort-import-export-specifiers": sortImportExportSpecifiers,
-    "blank-line-after-control-block": blankLineAfterControlBlock,
-    "type-literal-properties-newline": typeLiteralPropertiesNewline,
+// Oxlint は JS プラグインを Node.js の ESM ローダーで読み込みます。
+// パッケージのソースは TypeScript のため、`.js` 指定の相対 import を `.ts` に解決し直します。
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (
+      specifier.startsWith(".") &&
+      specifier.endsWith(".js") &&
+      context.parentURL?.startsWith(sourceRoot) === true
+    ) {
+      const tsUrl = new URL(`${specifier.slice(0, -3)}.ts`, context.parentURL);
+      if (existsSync(fileURLToPath(tsUrl))) {
+        return {
+          url: tsUrl.href,
+          shortCircuit: true,
+        };
+      }
+    }
+
+    return nextResolve(specifier, context);
   },
 });
+
+const { default: projectPlugin } = await import("../packages/vp-lint-plugins/src/index.ts");
+
+export default projectPlugin;

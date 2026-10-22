@@ -15,11 +15,13 @@ const objectPropertiesNewline = defineRule({
     },
     type: "layout",
     fixable: "whitespace",
-    messages: { multiline: "Objects with 2 or more properties must be multiline." },
+    messages: {
+      multiline: "Objects with 2 or more properties must be multiline.",
+    },
   },
   create(context) {
     return {
-      ObjectExpression(node) {
+      ObjectExpression(node): void {
         if (node.properties.length < 2) {
           return;
         }
@@ -31,7 +33,7 @@ const objectPropertiesNewline = defineRule({
 
         // Oxfmt は `{` の直後に改行があるかどうかで複数行を維持するため、最初のプロパティーが `{` と同じ行にある場合だけを対象にします。
         const firstProperty = node.properties[0];
-        if (firstProperty.loc.start.line !== node.loc.start.line) {
+        if (firstProperty === undefined || firstProperty.loc.start.line !== node.loc.start.line) {
           return;
         }
 

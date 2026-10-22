@@ -7,7 +7,7 @@ import {
   getPreviousStatement,
 } from "./blank-line.js";
 
-const SKIP_PREVIOUS_TYPES = new Set([
+const SKIP_PREVIOUS_TYPES: ReadonlySet<string> = new Set([
   // 制御ブロックは blank-line-after-control-block が担当します。
   "DoWhileStatement",
   "ForInStatement",
@@ -62,7 +62,7 @@ const blankLineBeforeReturn = defineRule({
     const sourceCode = context.sourceCode;
 
     return {
-      ReturnStatement(node) {
+      ReturnStatement(node): void {
         const previousStatement = getPreviousStatement(node);
         if (previousStatement === null) {
           return;
@@ -74,7 +74,7 @@ const blankLineBeforeReturn = defineRule({
 
         if (
           previousStatement.type === "ExpressionStatement" &&
-          previousStatement.directive !== undefined
+          typeof previousStatement.directive === "string"
         ) {
           return;
         }
