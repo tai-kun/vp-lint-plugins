@@ -1,0 +1,15 @@
+[tasks.test]
+run = { task = "test:check" }
+env = { CI = 1 }
+
+[tasks."test:check"]
+run = "npx vp check"
+
+[tasks.check]
+run = "npx vp check --fix"
+
+[tasks.dev]
+run = "npx blume dev"
+
+[tasks.update]
+run = ["npx npm-check-updates --target minor -u --cooldown 7"]

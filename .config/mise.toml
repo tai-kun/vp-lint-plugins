@@ -1,0 +1,26 @@
+[settings]
+minimum_release_age = "7d"
+
+[tools]
+node = "24"
+pnpm = "11"
+
+[tasks.test]
+run = [{ task = "test:check" }]
+env = { CI = 1 }
+
+[tasks."test:check"]
+run = ["npx vp check", "node scripts/sort-workspaces.mjs --check"]
+
+[tasks.check]
+run = ["npx vp check --fix", "node scripts/sort-workspaces.mjs"]
+
+[tasks.update]
+run = [
+  "npx npm-check-updates --target minor -u --cooldown 7",
+  "pnpm update --include-github-actions",
+  "pnpm install",
+  "for d in $(jq -r '.workspaces[]' package.json | xargs ls -d); do (cd \"$d\" && mise run update); done",
+  "pnpm audit --audit-level critical",
+  "npx skills update -y",
+]

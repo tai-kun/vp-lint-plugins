@@ -1,0 +1,15 @@
+{
+  "name": "website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "blume build"
+  },
+  "devDependencies": {
+    "@tai-kun/blume-integrations": "0.0.1",
+    "@tsconfig/node24": "24.0.5",
+    "@tsconfig/strictest": "2.0.8",
+    "@types/node": "24.19.2",
+    "blume": "2.2.3"
+  }
+}

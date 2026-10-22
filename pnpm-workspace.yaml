@@ -1,0 +1,52 @@
+packages: ["packages/vp-lint-plugins", "website"]
+
+minimumReleaseAge: 10080 # 7 日
+minimumReleaseAgeExclude:
+  - "@oxfmt/*"
+  - "@oxlint-tsgolint/*"
+  - "@oxlint/*"
+  - "@tai-kun/blume-integrations"
+  - "@vitest/*"
+  - "@voidzero-dev/*"
+  - oxfmt
+  - oxlint
+  - oxlint-tsgolint
+  - vite-plus
+  - vitest
+
+blockExoticSubdeps: true
+
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - "@pierre/theme"
+  - "@vercel/*"
+  - "chokidar"
+  - "semver"
+  - "undici-types"
+
+strictDepBuilds: true
+onlyBuiltDependencies: []
+allowBuilds:
+  esbuild: true
+
+update:
+  ignoreDeps:
+    - "*" # パッケージの更新は ncu に任せます。
+
+catalog:
+  "@vitest/browser-playwright": 5.0.5
+  "@vitest/coverage-istanbul": 5.0.5
+  "@vitest/coverage-v8": 5.0.5
+  vite-plus: 1.3.0
+  vite: npm:@voidzero-dev/vite-plus-core@1.3.0
+  vitest: 5.0.5
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"
+overrides:
+  vite@*: "catalog:"
+  vitest@*: "catalog:"

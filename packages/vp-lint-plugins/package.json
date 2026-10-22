@@ -1,0 +1,39 @@
+{
+  "name": "@tai-kun/vp-lint-plugins",
+  "version": "0.0.0",
+  "description": "",
+  "homepage": "https://tai-kun.github.io/vp-lint-plugins/",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/tai-kun/vp-lint-plugins",
+    "directory": "packages/vp-lint-plugins"
+  },
+  "files": [
+    "dist",
+    "src",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --project ./.config/tsconfig.build.json"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "24.0.5",
+    "@tsconfig/strictest": "2.0.8",
+    "@types/node": "24.19.2",
+    "@vitest/coverage-v8": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "readme": "README.md"
+}

@@ -1,0 +1,34 @@
+{
+  "folders": [
+    { "name": ".", "path": "." },
+    {
+      "name": "vp-lint-plugins",
+      "path": "packages/vp-lint-plugins",
+    },
+    { "name": "website", "path": "website" },
+  ],
+  "settings": {
+    // 一般
+
+    "editor.rulers": [100],
+    "editor.wordWrapColumn": 100,
+    "editor.wordWrap": "wordWrapColumn",
+
+    // TypeScript
+
+    "js/ts.tsdk.path": "./node_modules/typescript/lib",
+
+    // Oxc
+
+    "oxc.disableNestedConfig": true,
+    "oxc.fmt.disableNestedConfig": true,
+
+    "[javascript][typescript][typescriptreact][html][markdown][json][jsonc][yaml][toml]": {
+      "editor.defaultFormatter": "oxc.oxc-vscode",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": { "source.fixAll.oxc": "always", "source.format.oxc": "always" },
+      "editor.tabSize": 2,
+    },
+    "[astro][mdx]": { "editor.tabSize": 2 },
+  },
+}

@@ -1,0 +1,188 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - name: "vp-lint-plugins"
+            directory: "packages/vp-lint-plugins"
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: "チェックアウト"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: "mise をセットアップ"
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+
+      - name: "依存関係をインストール（ルート）"
+        run: pnpm i
+
+      - name: "内部依存パッケージのビルド"
+        run: |
+          root_dir="$(pwd)"
+          target_dir="${{ matrix.package.directory }}"
+
+          # 内部パッケージの推移的依存をトポロジカル順（依存先→依存元）で列挙する。
+          # 従来は直接依存のみを workspaces 定義順でビルドしていたため、
+          # 推移的依存のビルド漏れ（例: unikvs → allow-repair → passthrough）や
+          # 順序逆転（例: passthrough より後に testing）が起きていた。
+          mapfile -t ordered_dep_dirs < <(
+            ROOT_DIR="$root_dir" TARGET_DIR="$target_dir" python3 - <<'PY'
+          import glob
+          import json
+          import os
+          import pathlib
+
+          root = pathlib.Path(os.environ["ROOT_DIR"])
+          target_rel = os.environ["TARGET_DIR"]
+
+          with open(root / "package.json") as f:
+              workspaces = json.load(f)["workspaces"]
+
+          # workspaces の "pkg/*" 形式も展開できるよう、ディレクトリ列に正規化する
+          dirs: list[str] = []
+          for ws in workspaces:
+              if ws.endswith("/*"):
+                  base = ws[:-2]
+                  dirs.extend(
+                      sorted(
+                          str(pathlib.Path(p).relative_to(root))
+                          for p in glob.glob(str(root / base / "*"))
+                          if (pathlib.Path(p) / "package.json").is_file()
+                      )
+                  )
+              else:
+                  dirs.append(ws)
+
+          name_to_dir: dict[str, str] = {}
+          for d in dirs:
+              pj = root / d / "package.json"
+              if not pj.is_file():
+                  continue
+              with open(pj) as f:
+                  name_to_dir[json.load(f)["name"]] = d
+
+          dir_to_name = {v: k for k, v in name_to_dir.items()}
+          target_name = dir_to_name[target_rel]
+
+          def direct_internal_deps(pkg_name: str) -> list[str]:
+              with open(root / name_to_dir[pkg_name] / "package.json") as f:
+                  pkg = json.load(f)
+              deps: set[str] = set()
+              for key in (
+                  "dependencies",
+                  "devDependencies",
+                  "peerDependencies",
+                  "optionalDependencies",
+              ):
+                  deps.update((pkg.get(key) or {}).keys())
+              return sorted(d for d in deps if d in name_to_dir)
+
+          # DFS の post-order で推移閉包を収集すれば、依存先が先になる
+          visited: set[str] = set()
+          visiting: set[str] = set()
+          order: list[str] = []
+
+          def visit(name: str) -> None:
+              if name in visited:
+                  return
+              if name in visiting:
+                  raise ValueError(f"circular dependency detected at {name}")
+              visiting.add(name)
+              for dep in direct_internal_deps(name):
+                  visit(dep)
+              visiting.remove(name)
+              visited.add(name)
+              order.append(name)
+
+          visit(target_name)
+          order.pop()  # 自分自身を除く
+
+          for name in order:
+              print(name_to_dir[name])
+          PY
+          )
+
+          for rel_path in ${ordered_dep_dirs[@]+"${ordered_dep_dirs[@]}"}; do
+            [ -n "$rel_path" ] || continue
+            dep_name=$(jq -r .name "${root_dir}/${rel_path}/package.json")
+            echo "${rel_path} で内部依存パッケージ ${dep_name} をビルドします"
+            (cd "${root_dir}/${rel_path}" && npm run build)
+            echo
+          done
+
+      - name: "依存関係をインストール（パッケージ）"
+        run: |
+          if grep -q "playwright" package.json; then
+            npx playwright install --with-deps
+          fi
+        working-directory: ${{ matrix.package.directory }}
+
+      - name: "テスト準備"
+        run: |
+          if [ -f ./scripts/pretest.sh ]; then
+            bash -euo pipefail ./scripts/pretest.sh
+          fi
+        working-directory: ${{ matrix.package.directory }}
+
+      - name: "ビルド"
+        run: npm run build
+        working-directory: ${{ matrix.package.directory }}
+
+      - name: "テスト"
+        run: mise run test
+        working-directory: ${{ matrix.package.directory }}
+
+      - name: "カバレッジをアップロード"
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: coverage-${{ matrix.package.name }}
+          path: ${{ matrix.package.directory }}/coverage
+          if-no-files-found: ignore
+          retention-days: 7
+
+  package:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: "チェックアウト"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+
+      - name: "mise をセットアップ"
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+
+      - name: "依存関係をインストール"
+        run: pnpm i
+
+      - name: "ビルド"
+        run: npm run build --workspaces
+
+      - name: "パッケージ検証"
+        run: |
+          for pkg in $(jq -r '.workspaces[]' package.json); do
+            if [ ! -f "$pkg/package.json" ]; then
+              continue
+            fi
+
+            if [ "$(jq -r .private "$pkg/package.json")" = "true" ]; then
+              continue
+            fi
+
+            file=$(npm pack "./$pkg" --pack-destination "$RUNNER_TEMP" 2>/dev/null | tail -n 1)
+            npx publint "$RUNNER_TEMP/$file"
+            npx attw --profile esm-only "$RUNNER_TEMP/$file"
+          done

@@ -1,0 +1,19 @@
+[tasks.test]
+run = [{ task = "test:server" }, { task = "test:check" }]
+env = { CI = 1 }
+
+[tasks."test:server"]
+run = "npx vp test --config ./.config/vite.config.ts"
+
+[tasks."test:coverage"]
+run = "npx vp test run --coverage --config ./.config/vite.config.ts"
+env = { CI = 1 }
+
+[tasks."test:check"]
+run = "npx vp check"
+
+[tasks.check]
+run = "npx vp check --fix"
+
+[tasks.update]
+run = ["npx npm-check-updates --target minor -u --cooldown 7"]

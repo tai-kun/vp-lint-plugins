@@ -1,0 +1,749 @@
+name: "リリース"
+run-name: "リリース ${{ inputs.dry-run && '[dry-run] ' || '' }}${{ github.event.inputs.version }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "バージョン（例:「1.2.3」「package-name@1.2.3」）"
+        required: true
+      dry-run:
+        description: "公開せずに検証のみ行う（コミット・タグ・Release・npm 公開を省略）"
+        required: false
+        type: boolean
+        default: false
+      skip-checks:
+        description: "静的検証・テストを省略する（CI 済みの場合用）"
+        required: false
+        type: boolean
+        default: false
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+concurrency:
+  group: "release"
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      packages: ${{ steps.packages.outputs.list }}
+    steps:
+      - name: "バージョン解析"
+        id: pkg
+        uses: tai-kun/gha-package-version-parser@dd1d3b95150181171e03b6bc31dc090bd67e07e0 # v1.0.0
+        with:
+          package: ${{ github.event.inputs.version }}
+
+      - name: "チェックアウト"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+
+      - name: "mise をセットアップ"
+        uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+
+      - name: "依存関係をインストール"
+        run: |
+          node --version
+          pnpm --version
+          npm --version
+          pnpm install --frozen-lockfile
+
+      - name: "ビルド"
+        run: |
+          # NOTE: workspaces の定義順がトポロジカル順（依存される側が先）であることを前提に、
+          # 上から順にビルドする。順序を変える場合は依存関係を考慮すること。
+          dirs="$(jq -r '.workspaces[]' package.json)"
+          while IFS= read -r dir; do
+            if [ -z "$dir" ] || [ ! -f "$dir/package.json" ]; then
+              continue
+            fi
+
+            if [ "$(jq -r '.name' "$dir/package.json")" = "website" ]; then
+              continue
+            fi
+
+            if ! jq -e '.scripts.build' "$dir/package.json" >/dev/null; then
+              echo "::notice::$dir には build スクリプトがないためスキップします。"
+              continue
+            fi
+
+            echo "::group::$dir"
+            (
+              cd "$dir" || exit 1
+              npm run build
+            )
+            echo "::endgroup::"
+          done <<< "$dirs"
+
+      - name: "静的検証"
+        if: inputs.skip-checks != true
+        run: |
+          dirs="$(jq -r '.workspaces[]' package.json)"
+          while IFS= read -r dir; do
+            if [ -z "$dir" ] || [ ! -f "$dir/package.json" ]; then
+              continue
+            fi
+
+            if [ "$(jq -r '.private // false' "$dir/package.json")" = "true" ]; then
+              continue
+            fi
+
+            echo "::group::$dir"
+            (
+              cd "$dir" || exit 1
+
+              if ! mise tasks --json | jq -e '.[] | select(.name == "test:check")' >/dev/null; then
+                echo "::notice::$dir には test:check タスクがないためスキップします。"
+                exit 0
+              fi
+
+              mise run test:check
+            )
+            echo "::endgroup::"
+          done <<< "$dirs"
+
+      - name: "テスト"
+        if: inputs.skip-checks != true
+        run: |
+          dirs="$(jq -r '.workspaces[]' package.json)"
+          while IFS= read -r dir; do
+            if [ -z "$dir" ] || [ ! -f "$dir/package.json" ]; then
+              continue
+            fi
+
+            if [ "$(jq -r '.private // false' "$dir/package.json")" = "true" ]; then
+              continue
+            fi
+
+            echo "::group::$dir"
+            (
+              cd "$dir" || exit 1
+
+              if jq -e '((.dependencies // {}) + (.devDependencies // {})) | has("playwright")' package.json >/dev/null; then
+                npx playwright install --with-deps
+              fi
+
+              if [ -f scripts/pretest.sh ]; then
+                bash -euo pipefail ./scripts/pretest.sh
+              fi
+
+              if ! mise tasks --json | jq -e '.[] | select(.name == "test")' >/dev/null; then
+                echo "::notice::$dir には test タスクがないためスキップします。"
+                exit 0
+              fi
+
+              mise run test
+            )
+            echo "::endgroup::"
+          done <<< "$dirs"
+
+      - name: "公開パッケージを決定"
+        id: packages
+        env:
+          PACKAGE_NAME: ${{ steps.pkg.outputs.name }}
+          VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          git fetch --tags --force
+
+          matched=false
+          non_private_count=0
+          list=""
+          first_tag=""
+
+          dirs="$(jq -r '.workspaces[]' package.json)"
+          while IFS= read -r dir; do
+            if [ -z "$dir" ] || [ ! -f "$dir/package.json" ]; then
+              continue
+            fi
+
+            if [ "$(jq -r '.private // false' "$dir/package.json")" = "true" ]; then
+              continue
+            fi
+
+            non_private_count=$((non_private_count + 1))
+            name=$(jq -r '.name' "$dir/package.json")
+
+            if [ "$PACKAGE_NAME" != "*" ] && [ "$name" != "$PACKAGE_NAME" ]; then
+              continue
+            fi
+
+            matched=true
+            tag="$name@$VERSION"
+
+            if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+              echo "::warning::タグ $tag がすでに存在するため $name をスキップします。"
+              continue
+            fi
+
+            if [ -z "$first_tag" ]; then
+              first_tag="$tag"
+            fi
+
+            list+="$dir"$'\t'"$name"$'\t'"$VERSION"$'\n'
+          done <<< "$dirs"
+
+          if [ "$PACKAGE_NAME" != "*" ] && [ "$matched" = "false" ]; then
+            echo "::error::公開対象のパッケージ「$PACKAGE_NAME」が見つかりません。"
+            exit 1
+          fi
+
+          list=${list%$'\n'}
+
+          if [ -z "$list" ]; then
+            echo "::error::公開対象のパッケージがありません。"
+            exit 1
+          fi
+
+          count=$(grep -c . <<< "$list" || true)
+
+          # release コミットの文面はここで確定し、コミット手順とドライラン表示で共有する。
+          if [ "$count" -ge 2 ]; then
+            names=""
+            while IFS=$'\t' read -r _ name _version; do
+              if [ -z "$name" ]; then
+                continue
+              fi
+
+              names+="- $name"$'\n'
+            done <<< "$list"
+            names=${names%$'\n'}
+            message="release: v$VERSION (x$count)"$'\n'"$names"
+          elif [ "$non_private_count" -eq 1 ]; then
+            message="release: v$VERSION"
+          else
+            message="release: $first_tag"
+          fi
+
+          # 複数同時時は集約用タグ v$VERSION を使い、Release はそれに紐づける。
+          # 単件時は先頭（唯一）のパッケージタグを使う。
+          if [ "$count" -gt 1 ]; then
+            release_tag="v$VERSION"
+
+            if git ls-remote --exit-code --tags origin "refs/tags/$release_tag" >/dev/null 2>&1; then
+              echo "::error::タグ $release_tag がすでに存在します。"
+              exit 1
+            fi
+          else
+            release_tag="$first_tag"
+          fi
+
+          list_delim="RELEASE_LIST_EOF_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+          msg_delim="RELEASE_MSG_EOF_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+          {
+            echo "list<<$list_delim"
+            echo "$list"
+            echo "$list_delim"
+            echo "count=$count"
+            echo "non_private=$non_private_count"
+            echo "first_tag=$first_tag"
+            echo "release_tag=$release_tag"
+            echo "version=$VERSION"
+            echo "message<<$msg_delim"
+            echo "$message"
+            echo "$msg_delim"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: "npm レジストリーを確認"
+        if: steps.packages.outputs.count != '0'
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+        run: |
+          while IFS=$'\t' read -r _ name version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "::error::$name@$version は npm レジストリーにすでに存在します。"
+              exit 1
+            elif ! npm view "$name" version >/dev/null 2>&1; then
+              # npm の trusted publishing は既存パッケージにしか設定できないため、
+              # 初回公開はこのワークフローでは行えない。初回のみ手動で公開すること。
+              echo "::error::$name は npm レジストリーに存在しません。初回のみ手動で公開してください。"
+              echo "::error::npx setup-npm-trusted-publish $name"
+              exit 1
+            fi
+          done <<< "$LIST"
+
+      - name: "バージョンを更新"
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+        run: |
+          while IFS=$'\t' read -r dir name version; do
+            if [ -z "$name" ] || [ ! -f "$dir/package.json" ]; then
+              continue
+            fi
+
+            echo "$name のバージョンを $version に更新します。"
+            (
+              cd "$dir" || exit 1
+              pnpm version "$version" --no-git-tag-version --allow-same-version --no-git-checks
+            )
+          done <<< "$LIST"
+
+      - name: "CHANGELOG を生成"
+        id: changelog
+        if: steps.packages.outputs.count != '0'
+        env:
+          FIRST_TAG: ${{ steps.packages.outputs.first_tag }}
+          RELEASE_VERSION: ${{ steps.packages.outputs.version }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+        run: |
+          entry_file="$RUNNER_TEMP/release-changelog.md"
+
+          if [ "$RELEASE_COUNT" -gt 1 ]; then
+            heading="v$RELEASE_VERSION"
+          else
+            heading="$FIRST_TAG"
+          fi
+
+          # 同名パッケージの直前タグを起点にする。他パッケージのタグを拾わないため、
+          # モノレポでもパッケージごとの差分に近い CHANGELOG になる。
+          # NOTE: 複数パッケージ同時リリース時は先頭パッケージを基準にした共通文面になる。
+          first_name="${FIRST_TAG%@*}"
+          previous_tag=$(git describe --tags --abbrev=0 --match "$first_name@*" HEAD 2>/dev/null || true)
+          body=$(node .github/scripts/generate-changelog.mjs "$GITHUB_REPOSITORY" "$FIRST_TAG" "$previous_tag")
+
+          printf '## %s\n\n%s\n' "$heading" "$body" > "$entry_file"
+
+          changelog_delim="RELEASE_CHANGELOG_EOF_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}"
+          {
+            echo "changelog<<$changelog_delim"
+            cat "$entry_file"
+            echo "$changelog_delim"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: "CHANGELOG.md に追記"
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        run: |
+          entry_file="$RUNNER_TEMP/release-changelog.md"
+
+          if [ ! -f CHANGELOG.md ]; then
+            printf '# Changelog\n' > CHANGELOG.md
+          fi
+
+          merged=$(mktemp)
+          {
+            head -n 1 CHANGELOG.md
+            printf '\n'
+            cat "$entry_file"
+            tail -n +2 CHANGELOG.md
+          } > "$merged"
+          mv "$merged" CHANGELOG.md
+
+      - name: "更新をコミット"
+        id: commit
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          MESSAGE: ${{ steps.packages.outputs.message }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 意図しない成果物の混入を防ぐため、更新対象のファイルのみをステージする。
+          add_paths=(CHANGELOG.md pnpm-lock.yaml)
+          while IFS=$'\t' read -r dir name _version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            add_paths+=("$dir/package.json")
+          done <<< "$LIST"
+          git add -- "${add_paths[@]}"
+
+          if git diff --cached --quiet; then
+            echo "::notice::コミット対象の変更がないためコミットをスキップします。"
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "$MESSAGE"
+
+          branch="${BRANCH:-}"
+          if [ -z "$branch" ]; then
+            branch="$(git branch --show-current || true)"
+          fi
+          if [ -z "$branch" ]; then
+            echo "::error::現在のブランチを特定できません。"
+            exit 1
+          fi
+
+          # 通常 push との競合時は rebase して1回だけ再試行する。
+          if ! git push origin "HEAD:$branch"; then
+            echo "::notice::push に失敗したため rebase して再試行します。"
+            git pull --rebase origin "$branch"
+            git push origin "HEAD:$branch"
+          fi
+
+          {
+            echo "committed=true"
+            echo "sha=$(git rev-parse HEAD)"
+            echo "branch=$branch"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: "タグを作成"
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+          RELEASE_TAG: ${{ steps.packages.outputs.release_tag }}
+        run: |
+          tags=()
+          while IFS=$'\t' read -r _ name version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            tag="$name@$version"
+            git tag -a "$tag" -m "$tag"
+            tags+=("$tag")
+          done <<< "$LIST"
+
+          # 複数同時時は集約用タグも作成し、アトミック push に含める。
+          if [ "${RELEASE_COUNT:-1}" -gt 1 ] && [ -n "${RELEASE_TAG:-}" ]; then
+            git tag -a "$RELEASE_TAG" -m "$RELEASE_TAG"
+            tags+=("$RELEASE_TAG")
+          fi
+
+          if [ "${#tags[@]}" -eq 0 ]; then
+            echo "::notice::作成するタグがありません。"
+            exit 0
+          fi
+
+          # 部分的なタグ push を避けるため、まとめてアトミックに push する。
+          git push --atomic origin "${tags[@]}"
+
+      - name: "Release を作成"
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+          RELEASE_TAG: ${{ steps.packages.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.packages.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 複数同時時は集約用タグ v$VERSION に 1 つだけ作成する。
+          # 単件時はパッケージタグに作成する。
+          if [ "${RELEASE_COUNT:-1}" -gt 1 ]; then
+            gh release create "$RELEASE_TAG" --title "v$RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-changelog.md"
+            exit 0
+          fi
+
+          while IFS=$'\t' read -r _ name version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            tag="$name@$version"
+            gh release create "$tag" --title "$tag" --notes-file "$RUNNER_TEMP/release-changelog.md"
+          done <<< "$LIST"
+
+      - name: "npm に公開"
+        if: steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+        run: |
+          # 連続 publish で npm のレート制限（429）に当たることがあるため、
+          # パッケージ間に待機を入れ、制限検出時は指数バックオフで再試行する。
+          publish_interval_seconds=15
+          max_retries=5
+          retry_base_seconds=30
+
+          is_rate_limit_error() {
+            grep -Ei "429|too many requests|rate limit" "$1" >/dev/null 2>&1
+          }
+
+          publish_with_retry() {
+            local dir="$1" name="$2" version="$3"
+            local attempt=1 log_file wait_seconds
+            log_file="$(mktemp)"
+
+            while true; do
+              echo "$name@$version を公開します。（試行 $attempt/$max_retries）"
+              if (
+                cd "$dir" || exit 1
+                pnpm publish --access public --no-git-checks --provenance
+              ) 2>&1 | tee "$log_file"; then
+                rm -f "$log_file"
+                return 0
+              fi
+
+              if ! is_rate_limit_error "$log_file"; then
+                echo "::error::$name@$version の公開に失敗しました。"
+                rm -f "$log_file"
+                return 1
+              fi
+
+              if [ "$attempt" -ge "$max_retries" ]; then
+                echo "::error::$name@$version の公開でレート制限が解消しませんでした。"
+                rm -f "$log_file"
+                return 1
+              fi
+
+              wait_seconds=$((retry_base_seconds * (1 << (attempt - 1))))
+              echo "::notice::npm のレート制限を検出しました。${wait_seconds}s 待機して再試行します。（試行 $attempt/$max_retries）"
+              sleep "$wait_seconds"
+              attempt=$((attempt + 1))
+            done
+          }
+
+          # ロールバック時に取り消す対象を特定するため、この実行で公開した版のみを記録する。
+          published_file="$RUNNER_TEMP/released-npm.txt"
+          : > "$published_file"
+
+          first=true
+          while IFS=$'\t' read -r dir name version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            # 初回はすぐ公開し、2 件目以降の連続 publish 前に間隔をあける。
+            if [ "$first" = true ]; then
+              first=false
+            else
+              echo "::notice::npm のレート制限を避けるため ${publish_interval_seconds}s 待機します。"
+              sleep "$publish_interval_seconds"
+            fi
+
+            publish_with_retry "$dir" "$name" "$version"
+            echo "$name@$version" >> "$published_file"
+          done <<< "$LIST"
+
+      - name: "リリース結果を表示"
+        if: success() && steps.packages.outputs.count != '0' && inputs.dry-run != true
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+          RELEASE_TAG: ${{ steps.packages.outputs.release_tag }}
+        run: |
+          {
+            echo "## リリース結果"
+            echo ""
+            if [ "${RELEASE_COUNT:-1}" -gt 1 ]; then
+              echo "Release: https://github.com/$GITHUB_REPOSITORY/releases/tag/$RELEASE_TAG （$RELEASE_COUNT 件分を 1 つに集約）"
+              echo ""
+            fi
+            while IFS=$'\t' read -r _ name version; do
+              if [ -z "$name" ]; then
+                continue
+              fi
+
+              tag="$name@$version"
+              echo "- $tag"
+              echo "  - npm: https://www.npmjs.com/package/$name/v/$version"
+              if [ "${RELEASE_COUNT:-1}" -le 1 ]; then
+                echo "  - release: https://github.com/$GITHUB_REPOSITORY/releases/tag/$tag"
+              fi
+            done <<< "$LIST"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: "ドライラン結果を表示"
+        if: inputs.dry-run == true && steps.packages.outputs.count != '0'
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          MESSAGE: ${{ steps.packages.outputs.message }}
+          CHANGELOG: ${{ steps.changelog.outputs.changelog }}
+          FIRST_TAG: ${{ steps.packages.outputs.first_tag }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+          RELEASE_TAG: ${{ steps.packages.outputs.release_tag }}
+          RELEASE_VERSION: ${{ steps.packages.outputs.version }}
+          NON_PRIVATE: ${{ steps.packages.outputs.non_private }}
+        run: |
+          {
+            echo "## ドライラン結果（公開は行いません）"
+            echo ""
+            echo "### 公開対象"
+            echo ""
+            echo "| ディレクトリ | パッケージ | バージョン |"
+            echo "| --- | --- | --- |"
+            while IFS=$'\t' read -r dir name version; do
+              if [ -z "$name" ]; then
+                continue
+              fi
+
+              echo "| $dir | $name | $version |"
+            done <<< "$LIST"
+            echo ""
+            echo "### コミットメッセージ"
+            echo ""
+            echo '```'
+            echo "$MESSAGE"
+            echo '```'
+            echo ""
+            echo "### 作成するタグ"
+            echo ""
+            while IFS=$'\t' read -r _ name version; do
+              if [ -z "$name" ]; then
+                continue
+              fi
+
+              echo "- $name@$version"
+            done <<< "$LIST"
+            if [ "${RELEASE_COUNT:-1}" -gt 1 ]; then
+              echo "- $RELEASE_TAG （集約用）"
+            fi
+            echo ""
+            if [ "${RELEASE_COUNT:-1}" -gt 1 ]; then
+              echo "Release は $RELEASE_TAG に 1 つ集約します（タイトル: v$RELEASE_VERSION）。"
+            else
+              echo "Release は $RELEASE_TAG に作成します。"
+            fi
+            echo ""
+            echo "### CHANGELOG 追記内容"
+            echo ""
+            echo "$CHANGELOG"
+            echo ""
+            echo "### デバッグ情報"
+            echo ""
+            echo "- first_tag: $FIRST_TAG"
+            echo "- release_tag: $RELEASE_TAG"
+            if [ "${RELEASE_COUNT:-1}" -gt 1 ]; then
+              echo "- release_title: v$RELEASE_VERSION"
+            else
+              echo "- release_title: $RELEASE_TAG"
+            fi
+            echo "- version: $RELEASE_VERSION"
+            echo "- count: $RELEASE_COUNT"
+            echo "- non_private: $NON_PRIVATE"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice::ドライランのため、コミット・タグ・Release・npm 公開は行いませんでした。"
+
+      - name: "失敗時に npm 公開を取り消し"
+        if: failure() || cancelled()
+        run: |
+          # NOTE: unpublish した版は同番号で再公開できない。取り消し後は改版が必要。
+          published_file="$RUNNER_TEMP/released-npm.txt"
+
+          if [ ! -s "$published_file" ]; then
+            echo "::notice::この実行で公開したパッケージはないため取り消しをスキップします。"
+            exit 0
+          fi
+
+          # 依存される側から公開しているため、取り消しは逆順（依存する側から）に行う。
+          while IFS= read -r spec; do
+            if [ -z "$spec" ]; then
+              continue
+            fi
+
+            echo "$spec の npm 公開を取り消します。"
+            if ! npm unpublish "$spec"; then
+              echo "::warning::$spec の取り消しに失敗しました。手動で確認してください。"
+            fi
+          done < <(tac "$published_file")
+
+      - name: "失敗時にタグと Release を削除"
+        if: failure() || cancelled()
+        env:
+          LIST: ${{ steps.packages.outputs.list }}
+          RELEASE_COUNT: ${{ steps.packages.outputs.count }}
+          RELEASE_TAG: ${{ steps.packages.outputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "${LIST:-}" ]; then
+            echo "::notice::公開対象がないため削除をスキップします。"
+            exit 0
+          fi
+
+          # Release は集約用タグ（単件時はパッケージタグ）に 1 つのみ。
+          if [ -n "${RELEASE_TAG:-}" ]; then
+            if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+              echo "$RELEASE_TAG の Release を削除します。"
+
+              if ! gh release delete "$RELEASE_TAG" --yes --cleanup-tag; then
+                echo "::warning::$RELEASE_TAG の Release 削除に失敗しました。手動で確認してください。"
+              fi
+            else
+              echo "::notice::Release $RELEASE_TAG は存在しないため削除をスキップします。"
+            fi
+          fi
+
+          while IFS=$'\t' read -r _ name version; do
+            if [ -z "$name" ]; then
+              continue
+            fi
+
+            tag="$name@$version"
+
+            if ! git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+              echo "::notice::$tag はリモートに存在しないため削除をスキップします。"
+            else
+              echo "$tag のタグを削除します。"
+
+              if ! git push origin ":refs/tags/$tag"; then
+                echo "::warning::$tag のリモートタグ削除に失敗しました。手動で確認してください。"
+              fi
+            fi
+
+            if git rev-parse "$tag" >/dev/null 2>&1; then
+              git tag -d "$tag" || echo "::warning::$tag のローカルタグ削除に失敗しました。"
+            fi
+          done <<< "$LIST"
+
+          # 複数同時時の集約用タグも削除する（Release 削除の --cleanup-tag 済みならスキップされる）。
+          if [ "${RELEASE_COUNT:-1}" -gt 1 ] && [ -n "${RELEASE_TAG:-}" ]; then
+            if ! git ls-remote --exit-code --tags origin "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+              echo "::notice::$RELEASE_TAG はリモートに存在しないため削除をスキップします。"
+            else
+              echo "$RELEASE_TAG のタグを削除します。"
+
+              if ! git push origin ":refs/tags/$RELEASE_TAG"; then
+                echo "::warning::$RELEASE_TAG のリモートタグ削除に失敗しました。手動で確認してください。"
+              fi
+            fi
+
+            if git rev-parse "$RELEASE_TAG" >/dev/null 2>&1; then
+              git tag -d "$RELEASE_TAG" || echo "::warning::$RELEASE_TAG のローカルタグ削除に失敗しました。"
+            fi
+          fi
+
+      - name: "失敗時に release コミットを取り消し"
+        if: (failure() || cancelled()) && steps.commit.outputs.committed == 'true'
+        env:
+          COMMIT_SHA: ${{ steps.commit.outputs.sha }}
+          COMMIT_BRANCH: ${{ steps.commit.outputs.branch }}
+        run: |
+          if ! git fetch origin "$COMMIT_BRANCH" --tags --force; then
+            echo "::warning::fetch に失敗したためコミットの取り消しをスキップします。手動で確認してください。"
+            exit 0
+          fi
+
+          remote_sha="$(git rev-parse "origin/$COMMIT_BRANCH" 2>/dev/null || true)"
+
+          # この実行が push したコミットが先頭にある場合のみ取り消す。
+          # 検証前の失敗や後続コミットがある場合は、前回の正常リリースを壊さないよう何もしない。
+          if [ -n "$COMMIT_SHA" ] && [ "$remote_sha" = "$COMMIT_SHA" ]; then
+            echo "release コミットを取り消します: $COMMIT_SHA"
+            if ! git push --force-with-lease origin "HEAD~1:$COMMIT_BRANCH"; then
+              echo "::warning::release コミットの取り消し push に失敗しました。手動で確認してください。"
+            else
+              git reset --hard HEAD~1 || echo "::warning::ローカルの reset に失敗しました。"
+            fi
+          else
+            echo "::notice::リモート先頭がこの実行の release コミットではないためコミットの取り消しをスキップします。"
+          fi
+
+      - name: "pnpm ログをアップロード"
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: pnpm-logs-publish
+          path: |
+            /home/runner/.pnpm-debug.log
+            ~/.pnpm-debug.log
+            **/pnpm-debug.log
+          if-no-files-found: ignore
+          retention-days: 3

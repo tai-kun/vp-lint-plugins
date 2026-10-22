@@ -1,0 +1,23 @@
+{
+  "name": "vp-lint-plugins-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/vp-lint-plugins",
+    "website"
+  ],
+  "type": "module",
+  "scripts": {
+    "prepare": "vp config"
+  },
+  "devDependencies": {
+    "@vitest/browser-playwright": "catalog:",
+    "npm-check-updates": "23.1.1",
+    "playwright": "*",
+    "skills": "1.7.2",
+    "typescript": "7.0.2",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "packageManager": "pnpm@11.28.5"
+}
