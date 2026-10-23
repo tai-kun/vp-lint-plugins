@@ -1,5 +1,17 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.2
+
+### バグ修正
+
+- 変数宣言後の空行ルールを関連する式文に対応させる ([fde33ce](https://github.com/tai-kun/vp-lint-plugins/commit/fde33cebf228feb0b20ab2177b034130f644f85c))
+
+### その他
+
+- js ファイルを型の lint の除外対象にする ([b08e0aa](https://github.com/tai-kun/vp-lint-plugins/commit/b08e0aa81784cdfeab7776fb54c5740d7633f948))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.1...@tai-kun/vp-lint-plugins@0.0.2
+
 ## @tai-kun/vp-lint-plugins@0.0.1
 
 ### 新機能
