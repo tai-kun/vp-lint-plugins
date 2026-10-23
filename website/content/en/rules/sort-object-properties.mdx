@@ -36,10 +36,47 @@ const value = {
 };
 ```
 
+### Group headers [#group-headers]
+
+A comment separated from the following property by a blank line acts as a group header. It stays in place, and only the properties below it are sorted.
+
+```ts
+// Before
+const rules = {
+  // Category 1
+
+  zebra: 1,
+  a: 2,
+
+  // Category 2
+
+  delta: 4,
+  c: 3,
+};
+```
+
+```ts
+// After
+const rules = {
+  // Category 1
+
+  a: 2,
+  zebra: 1,
+
+  // Category 2
+
+  c: 3,
+  delta: 4,
+};
+```
+
 ## Notes [#notes]
 
 - Only properties inside the same blank-line group are reordered.
 - Comments directly above a property move with it.
+- Comments separated by a blank line remain in place as group headers.
+- Objects containing getters or setters are skipped. Methods are sortable.
+- Objects with a trailing comment on a property line, a comment on the `{` line, or a comment before `}` are skipped for safety.
 - Computed keys, `__proto__`, and duplicate keys are skipped, as are object literals containing spread elements.
 - Object literals are also made multiline.
 

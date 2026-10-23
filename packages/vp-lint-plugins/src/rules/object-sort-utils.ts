@@ -18,9 +18,17 @@ interface SortPlanOptions {
 
 interface SortUnit {
   endLine: number;
+  endOffset: number;
   name: string | null;
   property: SortableProperty;
   startLine: number;
+  startOffset: number;
+  text: string;
+}
+
+interface SortEdit {
+  end: number;
+  start: number;
   text: string;
 }
 
@@ -28,12 +36,19 @@ type NamedSortUnit = SortUnit & { name: string };
 
 type SortPlan =
   | {
+      edits: null;
       needsFix: false;
       replacement: null;
     }
   | {
+      edits: null;
       needsFix: true;
       replacement: string;
+    }
+  | {
+      edits: SortEdit[];
+      needsFix: true;
+      replacement: null;
     };
 
 function getLineStarts(text: string): number[] {
@@ -137,12 +152,39 @@ function sortGroup(group: readonly SortUnit[]): SortUnit[] {
   return [...sortable, ...rest];
 }
 
+function splitGroups(units: readonly SortUnit[]): SortUnit[][] {
+  const groups: SortUnit[][] = [];
+  let currentGroup: SortUnit[] = [];
+  let previousEndLine: number | null = null;
+
+  for (const unit of units) {
+    if (previousEndLine !== null && unit.startLine > previousEndLine + 1) {
+      groups.push(currentGroup);
+      currentGroup = [];
+    }
+
+    currentGroup.push(unit);
+    previousEndLine = unit.endLine;
+  }
+
+  if (currentGroup.length > 0) {
+    groups.push(currentGroup);
+  }
+
+  return groups;
+}
+
+function getEditText(units: readonly SortUnit[]): string {
+  return units.map((unit) => unit.text).join(",\n");
+}
+
 /**
  * オブジェクトリテラル／オブジェクトパターンの並び替え計画を返します。
  *
  * - プロパティー名の長さが短い順、同じ長さなら名前順
  * - 空行で区切られたグループ内だけで並び替え
  * - プロパティー直上のコメントはプロパティーと一緒に移動
+ * - 空行を挟んだコメントはグループ見出しとしてその場に残す
  *
  * 並び替えが安全でない場合は null を返します。
  */
@@ -159,7 +201,6 @@ function getSortPlan(
 
   const source = sourceCode.text;
   const lineStarts = getLineStarts(source);
-  const lineIndent = getLineIndent(source, lineStarts, node.loc.start.line);
   const comments = sourceCode
     .getAllComments()
     .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
@@ -171,7 +212,6 @@ function getSortPlan(
 
   const inlineStart = firstProperty.loc.start.line === node.loc.start.line;
   const singleLine = node.loc.start.line === node.loc.end.line;
-
   const units: SortUnit[] = [];
 
   if (inlineStart) {
@@ -186,7 +226,9 @@ function getSortPlan(
         text: source.slice(property.range[0], property.range[1]),
         endLine: property.loc.end.line,
         property,
+        endOffset: property.range[1],
         startLine: property.loc.start.line,
+        startOffset: property.range[0],
       });
     }
   } else {
@@ -201,13 +243,12 @@ function getSortPlan(
 
       if (
         previous !== null &&
-        comments.some(
-          (comment) =>
-            comment.loc.start.line === previous.loc.end.line &&
-            comment.range[0] >= previous.range[1] &&
-            comment.range[1] <= property.range[0],
-        )
+        candidates.some((comment) => comment.loc.start.line === previous.loc.end.line)
       ) {
+        return null;
+      }
+
+      if (candidates.some((comment) => comment.loc.start.line === node.loc.start.line)) {
         return null;
       }
 
@@ -221,15 +262,15 @@ function getSortPlan(
           continue;
         }
 
-        if (comment.loc.end.line !== expectedLine && comment.loc.end.line !== expectedLine - 1) {
+        if (comment.loc.end.line === expectedLine) {
           return null;
+        }
+
+        if (comment.loc.end.line !== expectedLine - 1) {
+          break;
         }
 
         if (comment.loc.start.line === expectedLine) {
-          return null;
-        }
-
-        if (comment.loc.start.line === node.loc.start.line) {
           return null;
         }
 
@@ -237,20 +278,39 @@ function getSortPlan(
         expectedLine = comment.loc.start.line;
       }
 
-      if (attached.length !== candidates.length) {
-        return null;
-      }
-
       const first = attached[0] ?? property;
       const startLine = first.loc.start.line;
-      const unitStart = lineStarts[startLine - 1] ?? 0;
+      let startOffset: number;
+
+      if (attached.length > 0) {
+        startOffset = lineStarts[startLine - 1] ?? first.range[0];
+      } else if (startLine === previous?.loc.end.line) {
+        startOffset = property.range[0];
+      } else {
+        startOffset = lineStarts[startLine - 1] ?? property.range[0];
+      }
+
+      let endOffset = property.range[1];
+
+      while (endOffset > property.range[0]) {
+        const character = source[endOffset - 1];
+
+        if (character !== "," && character !== ";") {
+          break;
+        }
+
+        endOffset -= 1;
+      }
+
       const isRest = property.type === "RestElement";
       units.push({
         name: isRest ? null : getPropertyName(property),
-        text: source.slice(unitStart, property.range[1]),
+        text: source.slice(startOffset, endOffset),
         endLine: property.loc.end.line,
         property,
+        endOffset,
         startLine,
+        startOffset,
       });
 
       previousProperty = property;
@@ -272,66 +332,80 @@ function getSortPlan(
     }
   }
 
-  const groups: SortUnit[][] = [];
-  let currentGroup: SortUnit[] = [];
-  let previousEndLine: number | null = null;
+  if (inlineStart) {
+    const lineIndent = getLineIndent(source, lineStarts, node.loc.start.line);
+    const groups = splitGroups(units);
+    const needsFormat = forceMultiline;
+    const needsSort = groups.some((group) => {
+      const sorted = sortGroup(group);
 
-  for (const unit of units) {
-    if (previousEndLine !== null && unit.startLine > previousEndLine + 1) {
-      groups.push(currentGroup);
-      currentGroup = [];
+      return sorted.some((unit, index) => unit !== group[index]);
+    });
+
+    if (!needsSort && !needsFormat) {
+      return {
+        edits: null,
+        needsFix: false,
+        replacement: null,
+      };
     }
 
-    currentGroup.push(unit);
-    previousEndLine = unit.endLine;
+    if (singleLine && !forceMultiline) {
+      const sortedUnits = sortGroup(units);
+
+      return {
+        edits: null,
+        needsFix: true,
+        replacement: `{ ${sortedUnits.map((unit) => unit.text).join(", ")} }`,
+      };
+    }
+
+    const groupsText = groups.map((group) => getEditText(sortGroup(group))).join(",\n\n");
+    const lastUnit = groups.flatMap((group) => sortGroup(group)).at(-1);
+    const trailingComma = lastUnit?.property.type === "RestElement" ? "" : ",";
+
+    return {
+      edits: null,
+      needsFix: true,
+      replacement: `{\n${groupsText}${trailingComma}\n${lineIndent}}`,
+    };
   }
 
-  if (currentGroup.length > 0) {
-    groups.push(currentGroup);
-  }
+  const edits: SortEdit[] = [];
 
-  let needsSort = false;
-
-  for (const group of groups) {
+  for (const group of splitGroups(units)) {
     const sorted = sortGroup(group);
 
-    if (sorted.some((unit, index) => unit !== group[index])) {
-      needsSort = true;
-      break;
+    if (sorted.every((unit, index) => unit === group[index])) {
+      continue;
     }
+
+    const first = group[0];
+    const last = group.at(-1);
+
+    if (first === undefined || last === undefined) {
+      continue;
+    }
+
+    edits.push({
+      end: last.endOffset,
+      text: getEditText(sorted),
+      start: first.startOffset,
+    });
   }
 
-  const needsFormat = forceMultiline && inlineStart;
-
-  if (!needsSort && !needsFormat) {
+  if (edits.length === 0) {
     return {
+      edits: null,
       needsFix: false,
       replacement: null,
     };
   }
 
-  if (singleLine && !forceMultiline) {
-    const sortedUnits = sortGroup(units);
-
-    return {
-      needsFix: true,
-      replacement: `{ ${sortedUnits.map((unit) => unit.text).join(", ")} }`,
-    };
-  }
-
-  const groupsText = groups
-    .map((group) =>
-      sortGroup(group)
-        .map((unit) => unit.text)
-        .join(",\n"),
-    )
-    .join(",\n\n");
-  const lastUnit = groups.flatMap((group) => sortGroup(group)).at(-1);
-  const trailingComma = lastUnit?.property.type === "RestElement" ? "" : ",";
-
   return {
+    edits,
     needsFix: true,
-    replacement: `{\n${groupsText}${trailingComma}\n${lineIndent}}`,
+    replacement: null,
   };
 }
 

@@ -6,7 +6,7 @@ import { getSortPlan } from "./object-sort-utils.js";
  * オブジェクトリテラルのプロパティーを、名前の長さが短い順、同じ長さなら名前順に並べます。
  *
  * 空行で区切られたグループは意図的なまとまりとみなし、グループ内だけで並べ替えます。
- * プロパティー直上のコメントはプロパティーと一緒に移動します。
+ * プロパティー直上のコメントはプロパティーと一緒に移動し、空行を挟んだコメントはグループ見出しとして残します。
  */
 const sortObjectProperties = defineRule({
   meta: {
@@ -34,6 +34,12 @@ const sortObjectProperties = defineRule({
 
         context.report({
           fix(fixer) {
+            if (plan.edits !== null) {
+              return plan.edits.map((edit) =>
+                fixer.replaceTextRange([edit.start, edit.end], edit.text),
+              );
+            }
+
             return fixer.replaceText(node, plan.replacement);
           },
           node,
@@ -49,6 +55,12 @@ const sortObjectProperties = defineRule({
 
         context.report({
           fix(fixer) {
+            if (plan.edits !== null) {
+              return plan.edits.map((edit) =>
+                fixer.replaceTextRange([edit.start, edit.end], edit.text),
+              );
+            }
+
             return fixer.replaceText(node, plan.replacement);
           },
           node,

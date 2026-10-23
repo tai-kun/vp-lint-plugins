@@ -11,8 +11,21 @@ ruleTester.run("sort-object-properties", sortObjectProperties, {
     "const value = { b: 1, b: 2 };",
     "const { a, b } = value;",
     "const { a, ...rest } = value;",
+    "const value = {\n  // カテゴリー 1\n\n  a: 1,\n  zebra: 2,\n\n  // カテゴリー 2\n\n  c: 3,\n  delta: 4,\n};",
+    "const value = {\n  // カテゴリー\n\n  a: 2,\n  // zebra です。\n  zebra: 1,\n};",
   ],
   invalid: [
+    {
+      code: "const value = {\n  // カテゴリー 1\n\n  zebra: 1,\n  a: 2,\n\n  // カテゴリー 2\n\n  delta: 3,\n  c: 4,\n};",
+      errors: [{ messageId: "sort" }],
+      output:
+        "const value = {\n  // カテゴリー 1\n\n  a: 2,\n  zebra: 1,\n\n  // カテゴリー 2\n\n  c: 4,\n  delta: 3,\n};",
+    },
+    {
+      code: "const value = {\n  // カテゴリー\n\n  // zebra です。\n  zebra: 1,\n  a: 2,\n};",
+      errors: [{ messageId: "sort" }],
+      output: "const value = {\n  // カテゴリー\n\n  a: 2,\n  // zebra です。\n  zebra: 1,\n};",
+    },
     {
       code: "const value = { b: 1, a: 2 };",
       errors: [{ messageId: "sort" }],
