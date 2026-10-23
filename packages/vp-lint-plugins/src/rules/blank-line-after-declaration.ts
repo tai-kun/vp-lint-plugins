@@ -61,16 +61,19 @@ const blankLineAfterDeclaration = defineRule({
 
     function checkNode(node: ESTree.Node): void {
       const declaration = getDeclaration(node);
+
       if (declaration === null || isOverload(declaration)) {
         return;
       }
 
       const nextStatement = getNextStatement(node);
+
       if (nextStatement === null || nextStatement.type === "EmptyStatement") {
         return;
       }
 
       const target = getInsertionTarget(node, nextStatement, sourceCode);
+
       if (hasBlankLine(node, target)) {
         return;
       }

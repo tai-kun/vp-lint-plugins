@@ -64,6 +64,7 @@ const blankLineBeforeReturn = defineRule({
     return {
       ReturnStatement(node): void {
         const previousStatement = getPreviousStatement(node);
+
         if (previousStatement === null) {
           return;
         }
@@ -80,6 +81,7 @@ const blankLineBeforeReturn = defineRule({
         }
 
         const target = getInsertionTarget(previousStatement, node, sourceCode);
+
         if (hasBlankLine(previousStatement, target)) {
           return;
         }

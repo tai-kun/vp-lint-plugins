@@ -38,6 +38,7 @@ type SortPlan =
 
 function getLineStarts(text: string): number[] {
   const starts = [0];
+
   for (let index = 0; index < text.length; index += 1) {
     if (text[index] === "\n") {
       starts.push(index + 1);
@@ -61,6 +62,7 @@ function getPropertyName(property: SortableProperty): string | null {
 
   const key = property.key;
   let name: string;
+
   if (key.type === "Identifier") {
     name = key.name;
   } else if (
@@ -81,6 +83,7 @@ function isSortableObject(node: SortableObject, allowRest: boolean): boolean {
   }
 
   const names = new Set<string>();
+
   for (const [index, property] of node.properties.entries()) {
     if (property.type === "RestElement") {
       if (!allowRest || index !== node.properties.length - 1) {
@@ -91,6 +94,7 @@ function isSortableObject(node: SortableObject, allowRest: boolean): boolean {
     }
 
     const name = getPropertyName(property);
+
     if (name === null || names.has(name)) {
       return false;
     }
@@ -108,6 +112,7 @@ function compareNames(left: string, right: string): number {
 
   const leftLower = left.toLowerCase();
   const rightLower = right.toLowerCase();
+
   if (leftLower !== rightLower) {
     return leftLower < rightLower ? -1 : 1;
   }
@@ -125,6 +130,7 @@ function compareUnits(left: NamedSortUnit, right: NamedSortUnit): number {
 
 function sortGroup(group: readonly SortUnit[]): SortUnit[] {
   const sortable = group.filter((unit): unit is NamedSortUnit => unit.name !== null);
+
   sortable.sort(compareUnits);
   const rest = group.filter((unit) => unit.name === null);
 
@@ -146,6 +152,7 @@ function getSortPlan(
   options: SortPlanOptions = {},
 ): SortPlan | null {
   const { allowRest = false, forceMultiline = true } = options;
+
   if (!isSortableObject(node, allowRest)) {
     return null;
   }
@@ -157,6 +164,7 @@ function getSortPlan(
     .getAllComments()
     .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
   const firstProperty = node.properties[0];
+
   if (firstProperty === undefined) {
     return null;
   }
@@ -165,6 +173,7 @@ function getSortPlan(
   const singleLine = node.loc.start.line === node.loc.end.line;
 
   const units: SortUnit[] = [];
+
   if (inlineStart) {
     if (comments.length > 0) {
       return null;
@@ -172,6 +181,7 @@ function getSortPlan(
 
     for (const property of node.properties) {
       const isRest = property.type === "RestElement";
+
       units.push({
         name: isRest ? null : getPropertyName(property),
         text: source.slice(property.range[0], property.range[1]),
@@ -182,6 +192,7 @@ function getSortPlan(
     }
   } else {
     let previousProperty: SortableProperty | null = null;
+
     for (const property of node.properties) {
       const previous = previousProperty;
       const boundary = previous === null ? node.range[0] + 1 : previous.range[1];
@@ -203,8 +214,10 @@ function getSortPlan(
 
       const attached: Comment[] = [];
       let expectedLine = property.loc.start.line;
+
       for (let index = candidates.length - 1; index >= 0; index -= 1) {
         const comment = candidates[index];
+
         if (comment === undefined) {
           continue;
         }
@@ -233,6 +246,7 @@ function getSortPlan(
       const startLine = first.loc.start.line;
       const unitStart = lineStarts[startLine - 1] ?? 0;
       const isRest = property.type === "RestElement";
+
       units.push({
         name: isRest ? null : getPropertyName(property),
         text: source.slice(unitStart, property.range[1]),
@@ -244,6 +258,7 @@ function getSortPlan(
     }
 
     const lastProperty = node.properties.at(-1);
+
     if (lastProperty === undefined) {
       return null;
     }
@@ -261,6 +276,7 @@ function getSortPlan(
   const groups: SortUnit[][] = [];
   let currentGroup: SortUnit[] = [];
   let previousEndLine: number | null = null;
+
   for (const unit of units) {
     if (previousEndLine !== null && unit.startLine > previousEndLine + 1) {
       groups.push(currentGroup);
@@ -276,8 +292,10 @@ function getSortPlan(
   }
 
   let needsSort = false;
+
   for (const group of groups) {
     const sorted = sortGroup(group);
+
     if (sorted.some((unit, index) => unit !== group[index])) {
       needsSort = true;
       break;
@@ -285,6 +303,7 @@ function getSortPlan(
   }
 
   const needsFormat = forceMultiline && inlineStart;
+
   if (!needsSort && !needsFormat) {
     return {
       needsFix: false,

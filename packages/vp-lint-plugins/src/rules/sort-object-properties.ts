@@ -27,6 +27,7 @@ const sortObjectProperties = defineRule({
           allowRest: true,
           forceMultiline: false,
         });
+
         if (plan === null || !plan.needsFix) {
           return;
         }
@@ -41,6 +42,7 @@ const sortObjectProperties = defineRule({
       },
       ObjectExpression(node): void {
         const plan = getSortPlan(node, context.sourceCode);
+
         if (plan === null || !plan.needsFix) {
           return;
         }

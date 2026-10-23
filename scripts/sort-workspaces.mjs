@@ -42,6 +42,7 @@ function compareNames(a, b) {
 
 /**
  * @param {string[]} argv
+ *
  * @returns {{ check: boolean, root: string }}
  */
 function parseArgs(argv) {
@@ -49,12 +50,15 @@ function parseArgs(argv) {
     root: process.cwd(),
     check: false,
   };
+
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
+
     if (arg === "--check") {
       args.check = true;
     } else if (arg === "--root") {
       const value = argv[++i];
+
       if (value === undefined || value === "") {
         throw new Error("Missing value for --root");
       }
@@ -74,6 +78,7 @@ function parseArgs(argv) {
 /**
  * @param {string} root
  * @param {string} pattern
+ *
  * @returns {Promise<string[]>}
  */
 async function expandPattern(root, pattern) {
@@ -92,6 +97,7 @@ async function expandPattern(root, pattern) {
     `^${rest[0].replaceAll(/[.+^${}()|[\]\\]/gu, "\\$&").replaceAll("*", "[^/]*")}$`,
     "u",
   );
+
   for (const entry of entries) {
     if (!entry.isDirectory() || !regex.test(entry.name)) {
       continue;
@@ -103,6 +109,7 @@ async function expandPattern(root, pattern) {
       const subPattern = [entry.name, ...rest.slice(1)].join("/");
       const baseRel = path.relative(root, baseDir);
       const prefix = baseRel === "" ? "" : `${baseRel}/`;
+
       for (const sub of await expandPattern(root, `${prefix}${subPattern}`)) {
         results.push(sub);
       }
@@ -111,6 +118,7 @@ async function expandPattern(root, pattern) {
 
   // Confirm each match actually holds a package.json.
   const confirmed = [];
+
   for (const dir of results) {
     try {
       await fs.access(path.join(root, dir, "package.json"));
@@ -136,8 +144,10 @@ async function main() {
 
   // Resolve workspace directories (supporting globs) while remembering the literal entries so formatting of the array stays intact.
   const dirs = [];
+
   for (const pattern of original) {
     const expanded = await expandPattern(root, pattern);
+
     if (expanded.length === 0) {
       console.warn(`warning: workspace "${pattern}" matched nothing, kept as-is`);
       dirs.push(pattern);
@@ -148,8 +158,10 @@ async function main() {
 
   const nameByDir = new Map();
   const depsByDir = new Map();
+
   for (const dir of new Set(dirs)) {
     let pkg;
+
     try {
       pkg = JSON.parse(await fs.readFile(path.join(root, dir, "package.json"), "utf8"));
     } catch {
@@ -164,8 +176,10 @@ async function main() {
 
     nameByDir.set(dir, pkg.name);
     const depNames = new Set();
+
     for (const key of RUNTIME_DEP_KEYS) {
       const deps = pkg[key];
+
       if (typeof deps === "object" && deps !== null) {
         for (const name of Object.keys(deps)) {
           depNames.add(name);
@@ -181,6 +195,7 @@ async function main() {
   // Build the graph: edge dep -> dependent.
   const indegree = new Map();
   const dependents = new Map();
+
   for (const dir of depsByDir.keys()) {
     indegree.set(dir, 0);
     dependents.set(dir, new Set());
@@ -188,8 +203,10 @@ async function main() {
 
   for (const [dir, depNames] of depsByDir) {
     const internalDeps = new Set();
+
     for (const name of depNames) {
       const depDir = dirByName.get(name);
+
       if (depDir !== undefined && depDir !== dir) {
         internalDeps.add(depDir);
       }
@@ -203,10 +220,13 @@ async function main() {
 
   // Kahn's algorithm with alphabetical tie-break for a stable result.
   const ready = [...indegree].filter(([, n]) => n === 0).map(([dir]) => dir);
+
   ready.sort(compareNames);
   const sorted = [];
+
   while (ready.length > 0) {
     const dir = ready.shift();
+
     sorted.push(dir);
     for (const dependent of dependents.get(dir)) {
       indegree.set(dependent, indegree.get(dependent) - 1);
@@ -222,6 +242,7 @@ async function main() {
       .filter(([, n]) => n > 0)
       .map(([dir]) => `${dir} (${nameByDir.get(dir)})`)
       .toSorted();
+
     throw new Error(`Circular workspace dependency detected involving: ${remaining.join(", ")}`);
   }
 

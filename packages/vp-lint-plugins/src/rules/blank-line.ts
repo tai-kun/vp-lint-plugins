@@ -5,6 +5,7 @@ import type { Fix, Fixer, ESTree, Comment, SourceCode } from "vite-plus/lint/plu
  */
 function getStatementBody(node: ESTree.Node): readonly ESTree.Node[] | null {
   const { parent } = node;
+
   if (parent === null) {
     return null;
   }
@@ -27,11 +28,13 @@ function getStatementBody(node: ESTree.Node): readonly ESTree.Node[] | null {
 
 function getNextStatement(node: ESTree.Node): ESTree.Node | null {
   const body = getStatementBody(node);
+
   if (body === null) {
     return null;
   }
 
   const index = body.indexOf(node);
+
   if (index === -1 || index === body.length - 1) {
     return null;
   }
@@ -41,11 +44,13 @@ function getNextStatement(node: ESTree.Node): ESTree.Node | null {
 
 function getPreviousStatement(node: ESTree.Node): ESTree.Node | null {
   const body = getStatementBody(node);
+
   if (body === null) {
     return null;
   }
 
   const index = body.indexOf(node);
+
   if (index <= 0) {
     return null;
   }
@@ -91,6 +96,7 @@ function getBlankLineFix(
   }
 
   const lineEnd = sourceCode.text.indexOf("\n", node.range[1]);
+
   if (lineEnd === -1) {
     return null;
   }

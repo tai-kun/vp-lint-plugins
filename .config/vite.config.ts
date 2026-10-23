@@ -18,7 +18,7 @@ export default defineConfig({
     endOfLine: "lf",
     // 日本語の Markdown は改行位置が表示に影響するため、そのまま保持します。
     proseWrap: "preserve",
-    // 2 プロパティー以上のオブジェクトは Oxlint の project/object-properties-newline で複数行にし、その改行を保持します。
+    // 2 プロパティー以上のオブジェクトは Oxlint の tai-kun/object-properties-newline で複数行にし、その改行を保持します。
     objectWrap: "preserve",
     printWidth: 100,
     quoteProps: "as-needed",
@@ -68,12 +68,20 @@ export default defineConfig({
       "default-case-last": "error",
       "unicorn/switch-case-braces": ["error", "always"],
       // return の直前に処理がある場合は空行を 1 行入れます。
-      "project/blank-line-before-return": "error",
+      "tai-kun/blank-line-before-return": "error",
       "unicorn/switch-case-break-position": "error",
       // 宣言の後に処理が続く場合は空行を 1 行入れます。
-      "project/blank-line-after-declaration": "error",
+      "tai-kun/blank-line-after-declaration": "error",
       // 制御ブロックの後に処理が続く場合は空行を 1 行入れます。
-      "project/blank-line-after-control-block": "error",
+      "tai-kun/blank-line-after-control-block": "error",
+      // 連続する変数宣言の後に別の文が続く場合は空行を 1 行入れます。
+      "tai-kun/blank-line-after-variable-declaration": "error",
+      // switch の case の間にも空行を 1 行入れます。
+      "tai-kun/blank-line-between-switch-cases": "error",
+      // クラスメンバーの間にも空行を 1 行入れます。
+      "tai-kun/blank-line-between-class-members": "error",
+      // オーバーロード署名と実装は隣接させます。
+      "tai-kun/overload-signatures-adjacent": "error",
 
       // 式と文の書き方を統一します。
 
@@ -108,18 +116,32 @@ export default defineConfig({
       "unicorn/number-literal-case": "error",
       "logical-assignment-operators": "error",
       "prefer-exponentiation-operator": "error",
-      "project/sort-object-properties": "error",
+      "tai-kun/sort-object-properties": "error",
       // JSX の props は「一般 → on* → aria-* → data-*」の順にします。
-      "project/sort-jsx-props": "error",
+      "tai-kun/sort-jsx-props": "error",
       // import / export の specifier は「型 → 変数など → default」の順にします。
-      "project/sort-import-export-specifiers": "error",
+      "tai-kun/sort-import-export-specifiers": "error",
       "unicorn/numeric-separators-style": "error",
       // 2 プロパティー以上のオブジェクトは複数行にし、可能なら名前の長さ→名前順に並べます。
-      "project/object-properties-newline": "error",
-      // コメントは 1 行 1 文にします。
-      "project/comment-one-sentence-per-line": "error",
+      "tai-kun/object-properties-newline": "error",
+      // コメントは 1 行 1 文にし、文末の句読点も要求します。
+      "tai-kun/comment-one-sentence-per-line": ["error", { requireEndPunctuation: true }],
+      // 日本語と半角文字の間には半角スペースを 1 つ入れます。
+      "tai-kun/comment-japanese-spacing": "error",
+      // コメントの開始記号の直後と終了記号の直前に空白を入れます。
+      "tai-kun/spaced-comment": "error",
+      // JSDoc のタググループの空行を揃えます。
+      "tai-kun/jsdoc-tag-lines": "error",
+      // JSDoc のタグの順序を揃えます。
+      "tai-kun/jsdoc-tag-order": "error",
+      // @param タグを引数の順序に揃えます。
+      "tai-kun/jsdoc-param-order": "error",
       // 2 つ以上のメンバーを持つ型リテラルは複数行にします。
-      "project/type-literal-properties-newline": "error",
+      "tai-kun/type-literal-properties-newline": "error",
+      // 型リテラルのメンバーは名前の長さ→名前順に並べます。
+      "tai-kun/sort-type-members": "error",
+      // クラスメンバーの順序を統一します。
+      "tai-kun/member-ordering": "error",
       "unicorn/consistent-template-literal-escape": "error",
 
       // import の並びと書き方を統一します。
@@ -301,7 +323,7 @@ export default defineConfig({
         specifier: "vite-plus/oxlint-plugin",
       },
       {
-        name: "project",
+        name: "tai-kun",
         specifier: "./.config/oxlint-plugin.js",
       },
     ],

@@ -4,7 +4,7 @@ import plugin from "../src/index.js";
 
 describe("plugin", () => {
   test("デフォルトエクスポートで tai-kun プラグインを公開する", ({ expect }) => {
-    // 実行と検証
+    // 実行と検証します。
     expect(plugin.meta?.name).toBe("tai-kun");
   });
 });

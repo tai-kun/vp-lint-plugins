@@ -59,6 +59,7 @@ function buildReplacement(
 
     return compareNames(left.name, right.name);
   });
+
   if (sorted.every((unit, index) => unit === units[index])) {
     return null;
   }
@@ -96,11 +97,13 @@ const sortImportExportSpecifiers = defineRule({
     ): void {
       const first = specifiers[0];
       const last = specifiers.at(-1);
+
       if (first === undefined || last === undefined) {
         return;
       }
 
       const replacement = buildReplacement(units, sourceCode, first, last);
+
       if (replacement === null) {
         return;
       }
@@ -119,18 +122,22 @@ const sortImportExportSpecifiers = defineRule({
         const specifiers = node.specifiers.filter(
           (specifier): specifier is ESTree.ImportSpecifier => specifier.type === "ImportSpecifier",
         );
+
         if (specifiers.length < 2 || hasUnsafeComment(node, specifiers, sourceCode)) {
           return;
         }
 
         const units: SpecifierUnit[] = [];
+
         for (const specifier of specifiers) {
           const name = getSpecifierName(specifier.imported);
+
           if (name === null) {
             return;
           }
 
           let group = 1;
+
           if (node.importKind === "type" || specifier.importKind === "type") {
             group = 0;
           } else if (name === "default") {
@@ -148,19 +155,23 @@ const sortImportExportSpecifiers = defineRule({
       },
       ExportNamedDeclaration(node): void {
         const { specifiers } = node;
+
         if (specifiers.length < 2 || hasUnsafeComment(node, specifiers, sourceCode)) {
           return;
         }
 
         const units: SpecifierUnit[] = [];
+
         for (const specifier of specifiers) {
           const localName = getSpecifierName(specifier.local);
           const exportedName = getSpecifierName(specifier.exported);
+
           if (localName === null || exportedName === null) {
             return;
           }
 
           let group = 1;
+
           if (node.exportKind === "type" || specifier.exportKind === "type") {
             group = 0;
           } else if (localName === "default" || exportedName === "default") {

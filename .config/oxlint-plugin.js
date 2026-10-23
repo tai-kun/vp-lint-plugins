@@ -14,6 +14,7 @@ registerHooks({
       context.parentURL?.startsWith(sourceRoot) === true
     ) {
       const tsUrl = new URL(`${specifier.slice(0, -3)}.ts`, context.parentURL);
+
       if (existsSync(fileURLToPath(tsUrl))) {
         return {
           url: tsUrl.href,

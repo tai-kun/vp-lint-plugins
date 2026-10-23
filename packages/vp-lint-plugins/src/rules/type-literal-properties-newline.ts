@@ -24,6 +24,7 @@ const typeLiteralPropertiesNewline = defineRule({
         }
 
         const firstMember = node.members[0];
+
         if (firstMember === undefined || firstMember.loc.start.line !== node.loc.start.line) {
           return;
         }

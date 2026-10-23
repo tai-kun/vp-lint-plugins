@@ -49,11 +49,13 @@ const blankLineAfterControlBlock = defineRule({
 
     function checkNode(node: ESTree.Node): void {
       const nextStatement = getNextStatement(node);
+
       if (nextStatement === null || nextStatement.type === "EmptyStatement") {
         return;
       }
 
       const target = getInsertionTarget(node, nextStatement, sourceCode);
+
       if (hasBlankLine(node, target)) {
         return;
       }
@@ -68,6 +70,7 @@ const blankLineAfterControlBlock = defineRule({
     }
 
     const visitors: Visitor = {};
+
     for (const type of CONTROL_STATEMENT_TYPES) {
       visitors[type] = checkNode;
     }

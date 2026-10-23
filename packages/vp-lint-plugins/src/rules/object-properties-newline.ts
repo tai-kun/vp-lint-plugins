@@ -33,6 +33,7 @@ const objectPropertiesNewline = defineRule({
 
         // Oxfmt は `{` の直後に改行があるかどうかで複数行を維持するため、最初のプロパティーが `{` と同じ行にある場合だけを対象にします。
         const firstProperty = node.properties[0];
+
         if (firstProperty === undefined || firstProperty.loc.start.line !== node.loc.start.line) {
           return;
         }

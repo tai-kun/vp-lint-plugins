@@ -47,3 +47,62 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
     },
   ],
 });
+
+ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentOneSentencePerLine, {
+  valid: [
+    {
+      code: "// これは文です。\nconst a = 1;",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "// eslint-disable-next-line no-console\nconsole.log(1);",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "// TODO: あとで直します。\nconst a = 1;",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * @param value 値\n */",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * - 項目\n */",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * const value = 1;\n */",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * これは文です。\n */",
+      options: [{ requireEndPunctuation: true }],
+    },
+  ],
+  invalid: [
+    {
+      code: "// これは文です\nconst a = 1;",
+      errors: [{ messageId: "missingEndPunctuation" }],
+      output: null,
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * これは文です\n */",
+      errors: [{ messageId: "missingEndPunctuation" }],
+      output: null,
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * これは文です。\n * これも文です\n */",
+      errors: [{ messageId: "missingEndPunctuation" }],
+      output: null,
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/** これは文です */",
+      errors: [{ messageId: "missingEndPunctuation" }],
+      output: null,
+      options: [{ requireEndPunctuation: true }],
+    },
+  ],
+});

@@ -33,6 +33,7 @@ function getAttributeGroup(name: string): number {
 function compareAttributes(left: AttributeUnit, right: AttributeUnit): number {
   const leftGroup = getAttributeGroup(left.name);
   const rightGroup = getAttributeGroup(right.name);
+
   if (leftGroup !== rightGroup) {
     return leftGroup - rightGroup;
   }
@@ -55,6 +56,7 @@ function hasCommentBetweenAttributes(
 
   return attributes.some((attribute, index) => {
     const nextAttribute = attributes[index + 1];
+
     if (nextAttribute === undefined) {
       return false;
     }
@@ -88,11 +90,13 @@ const sortJsxProps = defineRule({
     return {
       JSXOpeningElement(node): void {
         const attributes = node.attributes.filter(isNamedAttribute);
+
         if (attributes.length < 2 || attributes.length !== node.attributes.length) {
           return;
         }
 
         const names = new Set<string>();
+
         for (const attribute of attributes) {
           if (names.has(attribute.name.name)) {
             return;
@@ -110,12 +114,14 @@ const sortJsxProps = defineRule({
           text: sourceCode.text.slice(attribute.range[0], attribute.range[1]),
         }));
         const sorted = [...units].sort(compareAttributes);
+
         if (sorted.every((unit, index) => unit === units[index])) {
           return;
         }
 
         const firstAttribute = attributes[0];
         const lastAttribute = attributes.at(-1);
+
         if (firstAttribute === undefined || lastAttribute === undefined) {
           return;
         }
