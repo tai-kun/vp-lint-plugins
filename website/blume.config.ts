@@ -1,13 +1,9 @@
-import {
-  FAKE_DEFAULT_LOCALE,
-  typeTableDetailsIds,
-  routeByBrowserLanguage,
-} from "@tai-kun/blume-integrations";
+import { typeTableDetailsIds, routeByBrowserLanguage } from "@tai-kun/blume-integrations";
 import { defineConfig } from "blume";
 import { filesystem, githubReleases } from "blume/sources";
 
-const PROJET_NAME = "tai-kun's Vite+ Lint Plugins";
-const GITHUB_REPO = "vp-lint-plugins";
+const PROJET_NAME = "ts-template";
+const GITHUB_REPO = "ts-template";
 const GITHUB_OWNER = "tai-kun";
 
 export default defineConfig({
@@ -41,9 +37,8 @@ export default defineConfig({
         code: "en",
         label: "English",
       },
-      FAKE_DEFAULT_LOCALE,
     ],
-    defaultLocale: FAKE_DEFAULT_LOCALE.code,
+    defaultLocale: "ja",
   },
   navigation: {
     repo: `https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}`,
