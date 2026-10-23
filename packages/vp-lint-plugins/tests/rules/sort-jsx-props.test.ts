@@ -2,7 +2,6 @@ import sortJsxProps from "../../src/rules/sort-jsx-props.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("sort-jsx-props", sortJsxProps, {
   valid: [
     {

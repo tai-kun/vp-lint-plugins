@@ -2,7 +2,6 @@ import sortTypeMembers from "../../src/rules/sort-type-members.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("sort-type-members", sortTypeMembers, {
   valid: [
     "type A = { a: string; b: number };",

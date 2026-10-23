@@ -129,7 +129,6 @@ function collectDiagnostics(
     if (next !== undefined && next !== null && canContinue(content, next)) {
       const nextLeadingSpace = /^\s*/u.exec(next.content)?.[0] ?? "";
       const separator = nextLeadingSpace === "" && needsSpace(content, next.content) ? " " : "";
-
       fixes.push({
         end: next.start,
         loc: {
@@ -145,6 +144,7 @@ function collectDiagnostics(
         text: separator,
         start: info.end,
       });
+
       continue;
     }
 
@@ -205,7 +205,6 @@ const commentOneSentencePerLine = defineRule({
 
       for (const info of diagnostics.missingPunctuation) {
         const column = info.column + info.content.trimEnd().length;
-
         context.report({
           loc: {
             end: {

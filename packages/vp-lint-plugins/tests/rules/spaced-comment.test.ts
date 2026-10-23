@@ -2,7 +2,6 @@ import spacedComment from "../../src/rules/spaced-comment.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("spaced-comment", spacedComment, {
   valid: [
     "// comment\nconst a = 1;",

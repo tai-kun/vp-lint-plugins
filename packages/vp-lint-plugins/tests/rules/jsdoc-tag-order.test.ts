@@ -2,7 +2,6 @@ import jsdocTagOrder from "../../src/rules/jsdoc-tag-order.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("jsdoc-tag-order", jsdocTagOrder, {
   valid: [
     "/**\n * @param a\n * @returns b\n */",

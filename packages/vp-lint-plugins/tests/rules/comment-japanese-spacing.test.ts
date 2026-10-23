@@ -2,7 +2,6 @@ import commentJapaneseSpacing from "../../src/rules/comment-japanese-spacing.js"
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("comment-japanese-spacing", commentJapaneseSpacing, {
   valid: [
     "// これは Vite+ のテストです。",

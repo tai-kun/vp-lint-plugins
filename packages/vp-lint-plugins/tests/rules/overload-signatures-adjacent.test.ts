@@ -2,7 +2,6 @@ import overloadSignaturesAdjacent from "../../src/rules/overload-signatures-adja
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("overload-signatures-adjacent", overloadSignaturesAdjacent, {
   valid: [
     "function f(a: string): void;\nfunction f(a: number): void;\nfunction f(a: string | number): void {}",

@@ -2,7 +2,6 @@ import blankLineBetweenClassMembers from "../../src/rules/blank-line-between-cla
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("blank-line-between-class-members", blankLineBetweenClassMembers, {
   valid: [
     "class A {\n  a = 1;\n\n  b() {}\n}",

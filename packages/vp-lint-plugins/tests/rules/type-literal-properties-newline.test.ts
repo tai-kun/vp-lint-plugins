@@ -2,7 +2,6 @@ import typeLiteralPropertiesNewline from "../../src/rules/type-literal-propertie
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("type-literal-properties-newline", typeLiteralPropertiesNewline, {
   valid: [
     "type Value = { a: string };",

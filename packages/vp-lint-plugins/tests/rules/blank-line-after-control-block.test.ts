@@ -2,7 +2,6 @@ import blankLineAfterControlBlock from "../../src/rules/blank-line-after-control
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("blank-line-after-control-block", blankLineAfterControlBlock, {
   valid: [
     "if (a) {\n  b();\n}\n\nc();",

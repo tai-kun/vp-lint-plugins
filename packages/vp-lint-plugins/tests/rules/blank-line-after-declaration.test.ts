@@ -2,7 +2,6 @@ import blankLineAfterDeclaration from "../../src/rules/blank-line-after-declarat
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("blank-line-after-declaration", blankLineAfterDeclaration, {
   valid: [
     "function a() {}\n\nconst b = 1;",

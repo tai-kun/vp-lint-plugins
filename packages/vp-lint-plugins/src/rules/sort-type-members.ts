@@ -176,8 +176,8 @@ function splitGroups(units: readonly MemberUnit[]): MemberUnit[][] {
 
 function sortGroup(group: readonly MemberUnit[]): MemberUnit[] {
   const sortable = group.filter((unit): unit is NamedUnit => unit.name !== null);
-
   sortable.sort((left, right) => compareNames(left.name, right.name));
+
   const rest = group.filter((unit) => unit.name === null);
 
   return [...sortable, ...rest];

@@ -2,7 +2,6 @@ import blankLineBetweenSwitchCases from "../../src/rules/blank-line-between-swit
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("blank-line-between-switch-cases", blankLineBetweenSwitchCases, {
   valid: [
     "switch (x) {\n  case 1:\n    a();\n\n  case 2:\n    b();\n}",

@@ -2,7 +2,6 @@ import commentOneSentencePerLine from "../../src/rules/comment-one-sentence-per-
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
   valid: [
     "/**\n * これは文です。\n * これも文です。\n */\nconst a = 1;",
@@ -47,7 +46,6 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
     },
   ],
 });
-
 ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentOneSentencePerLine, {
   valid: [
     {

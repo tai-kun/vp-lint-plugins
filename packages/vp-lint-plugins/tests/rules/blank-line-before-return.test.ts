@@ -2,7 +2,6 @@ import blankLineBeforeReturn from "../../src/rules/blank-line-before-return.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("blank-line-before-return", blankLineBeforeReturn, {
   valid: [
     "function f() {\n  return 1;\n}",

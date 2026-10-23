@@ -72,7 +72,6 @@ for (const line of log.split("\n")) {
   const shortHash = hash.slice(0, 7);
   const link = `https://github.com/${repository}/commit/${hash}`;
   const prefix = scope === undefined ? "" : `**${scope}:** `;
-
   groups.get(section.title).push(`- ${prefix}${description} ([${shortHash}](${link}))`);
 }
 
@@ -92,7 +91,6 @@ const compareURL =
   previousTag === ""
     ? `https://github.com/${repository}/commits/${currentTag}`
     : `https://github.com/${repository}/compare/${previousTag}...${currentTag}`;
-
 blocks.push(`**Full Changelog**: ${compareURL}`);
 
 process.stdout.write(blocks.join("\n\n"));

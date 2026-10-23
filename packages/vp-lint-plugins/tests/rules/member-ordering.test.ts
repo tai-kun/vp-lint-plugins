@@ -2,7 +2,6 @@ import memberOrdering from "../../src/rules/member-ordering.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("member-ordering", memberOrdering, {
   valid: [
     "class A {\n  static a = 1;\n\n  static {}\n\n  b = 2;\n\n  constructor() {}\n\n  static c() {}\n\n  d() {}\n}",

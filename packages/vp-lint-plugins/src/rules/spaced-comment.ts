@@ -70,7 +70,6 @@ const spacedComment = defineRule({
         const contentStart = prefixLength;
         const contentEnd = raw.lastIndexOf("*/");
         const content = raw.slice(contentStart, contentEnd);
-
         needsLeading = content !== "" && !isWhitespace(content[0]);
         needsTrailing = content !== "" && !isWhitespace(content.at(-1));
       } else {
@@ -79,7 +78,6 @@ const spacedComment = defineRule({
         const leadingContent = firstLine.slice(prefixLength);
         const closeIndex = lastLine.lastIndexOf("*/");
         const trailingContent = lastLine.slice(0, closeIndex);
-
         needsLeading = leadingContent !== "" && !isWhitespace(leadingContent[0]);
         needsTrailing = trailingContent !== "" && !isWhitespace(trailingContent.at(-1));
       }

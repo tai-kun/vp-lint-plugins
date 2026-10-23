@@ -101,13 +101,13 @@ function getJSDocLines(comment: Comment, sourceCode: SourceCode): JSDocLine[] | 
       const closeIndex = line.lastIndexOf("*/");
       const contentEnd = closeIndex === -1 ? line.length : Math.max(contentStart, closeIndex);
       const content = line.slice(contentStart, contentEnd);
-
       lines.push({
         raw: line,
         prefix: line.slice(0, contentStart),
         content,
         tagName: getTagName(content),
       });
+
       continue;
     }
 
@@ -122,7 +122,6 @@ function getJSDocLines(comment: Comment, sourceCode: SourceCode): JSDocLine[] | 
     const closeIndex = line.lastIndexOf("*/");
     const contentEnd = closeIndex === -1 ? line.length : Math.max(contentStart, closeIndex);
     const content = line.slice(contentStart, contentEnd);
-
     lines.push({
       raw: line,
       prefix,

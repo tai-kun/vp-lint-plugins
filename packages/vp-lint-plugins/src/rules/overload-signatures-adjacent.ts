@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
-import type { Fix, Fixer, ESTree, Context, SourceCode } from "vite-plus/lint/plugins";
+import type { ESTree, Context, SourceCode } from "vite-plus/lint/plugins";
 
-import { getNextStatement } from "./blank-line.js";
+import { getNextStatement, getRemoveBlankLineFix } from "./blank-line.js";
 
 function getFunction(node: ESTree.Node): ESTree.Function | null {
   if (node.type === "FunctionDeclaration" || node.type === "TSDeclareFunction") {
@@ -37,32 +37,6 @@ function getKeyName(node: ESTree.MethodDefinition): string | null {
   return null;
 }
 
-function getRemoveBlankLinesFix(
-  fixer: Fixer,
-  sourceCode: SourceCode,
-  previous: ESTree.Node,
-  next: ESTree.Node,
-): Fix | null {
-  if (next.loc.start.line <= previous.loc.end.line + 1) {
-    return null;
-  }
-
-  const fromLineEnd = sourceCode.text.indexOf("\n", previous.range[1]);
-
-  if (fromLineEnd === -1) {
-    return null;
-  }
-
-  const nextLineStart = sourceCode.text.lastIndexOf("\n", next.range[0]) + 1;
-  const indent = sourceCode.text.slice(nextLineStart, next.range[0]);
-
-  if (indent.trim() !== "") {
-    return null;
-  }
-
-  return fixer.replaceTextRange([fromLineEnd, next.range[0]], `\n${indent}`);
-}
-
 function hasCommentBetween(
   sourceCode: SourceCode,
   previous: ESTree.Node,
@@ -88,7 +62,7 @@ function reportIfSeparated(
 
   context.report({
     fix(fixer) {
-      return getRemoveBlankLinesFix(fixer, sourceCode, previous, next);
+      return getRemoveBlankLineFix(fixer, sourceCode, previous, next);
     },
     node: next,
     messageId: "adjacent",

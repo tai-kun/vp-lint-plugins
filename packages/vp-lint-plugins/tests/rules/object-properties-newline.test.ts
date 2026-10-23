@@ -2,7 +2,6 @@ import objectPropertiesNewline from "../../src/rules/object-properties-newline.j
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("object-properties-newline", objectPropertiesNewline, {
   valid: [
     "const value = { a: 1 };",

@@ -2,7 +2,6 @@ import jsdocTagLines from "../../src/rules/jsdoc-tag-lines.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("jsdoc-tag-lines", jsdocTagLines, {
   valid: [
     "/**\n * 説明です。\n *\n * @param a\n * @param b\n *\n * @returns c\n */\nfunction f(a: string, b: number): string {\n  return a;\n}",

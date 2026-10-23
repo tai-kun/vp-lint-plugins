@@ -2,7 +2,6 @@ import sortImportExportSpecifiers from "../../src/rules/sort-import-export-speci
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("sort-import-export-specifiers", sortImportExportSpecifiers, {
   valid: [
     'import { a, b } from "module";',

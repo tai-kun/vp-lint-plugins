@@ -220,14 +220,14 @@ async function main() {
 
   // Kahn's algorithm with alphabetical tie-break for a stable result.
   const ready = [...indegree].filter(([, n]) => n === 0).map(([dir]) => dir);
-
   ready.sort(compareNames);
+
   const sorted = [];
 
   while (ready.length > 0) {
     const dir = ready.shift();
-
     sorted.push(dir);
+
     for (const dependent of dependents.get(dir)) {
       indegree.set(dependent, indegree.get(dependent) - 1);
       if (indegree.get(dependent) === 0) {

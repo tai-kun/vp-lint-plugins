@@ -130,8 +130,8 @@ function compareUnits(left: NamedSortUnit, right: NamedSortUnit): number {
 
 function sortGroup(group: readonly SortUnit[]): SortUnit[] {
   const sortable = group.filter((unit): unit is NamedSortUnit => unit.name !== null);
-
   sortable.sort(compareUnits);
+
   const rest = group.filter((unit) => unit.name === null);
 
   return [...sortable, ...rest];
@@ -181,7 +181,6 @@ function getSortPlan(
 
     for (const property of node.properties) {
       const isRest = property.type === "RestElement";
-
       units.push({
         name: isRest ? null : getPropertyName(property),
         text: source.slice(property.range[0], property.range[1]),
@@ -246,7 +245,6 @@ function getSortPlan(
       const startLine = first.loc.start.line;
       const unitStart = lineStarts[startLine - 1] ?? 0;
       const isRest = property.type === "RestElement";
-
       units.push({
         name: isRest ? null : getPropertyName(property),
         text: source.slice(unitStart, property.range[1]),
@@ -254,6 +252,7 @@ function getSortPlan(
         property,
         startLine,
       });
+
       previousProperty = property;
     }
 

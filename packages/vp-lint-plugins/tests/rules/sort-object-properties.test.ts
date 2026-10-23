@@ -2,7 +2,6 @@ import sortObjectProperties from "../../src/rules/sort-object-properties.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("sort-object-properties", sortObjectProperties, {
   valid: [
     "const value = {\n  a: 1,\n  b: 2,\n};",

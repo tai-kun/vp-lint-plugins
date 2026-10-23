@@ -6,7 +6,7 @@ description: Require a blank line after a variable declaration group when anothe
 - Rule ID: `tai-kun/blank-line-after-variable-declaration`
 - Auto-fix: Yes
 
-Requires one blank line after a group of `const`, `let`, or `var` declarations when a different kind of statement follows.
+Requires one blank line after a group of `const`, `let`, or `var` declarations when a different kind of statement follows. Expression statements that reference the declared variables are treated as part of the same group, so the blank line goes after follow-up processing such as `ready.sort(compare)`.
 
 ## Configuration [#configuration]
 
@@ -21,22 +21,24 @@ Add the rule to `lint.rules` in `vite.config.ts` to enable it.
 ### Invalid [#invalid]
 
 ```ts
-const a = 1;
-const b = 2;
-foo();
+const ready = getItems();
+
+ready.sort(compareNames);
+const sorted = [];
 ```
 
 ### Valid [#valid]
 
 ```ts
-const a = 1;
-const b = 2;
+const ready = getItems();
+ready.sort(compareNames);
 
-foo();
+const sorted = [];
 ```
 
 ## Notes [#notes]
 
+- Expression statements that use the declared variables, such as `ready.sort(compare)`, belong to the same group, and blank lines between them are removed.
 - Exported variable declarations are also checked.
 - Consecutive variable declarations are treated as one group.
 - `return` is excluded because `blank-line-before-return` handles it.

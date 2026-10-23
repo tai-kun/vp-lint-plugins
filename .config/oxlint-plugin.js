@@ -3,7 +3,6 @@ import { registerHooks } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const sourceRoot = new URL("../packages/vp-lint-plugins/src/", import.meta.url).href;
-
 // Oxlint は JS プラグインを Node.js の ESM ローダーで読み込みます。
 // パッケージのソースは TypeScript のため、`.js` 指定の相対 import を `.ts` に解決し直します。
 registerHooks({

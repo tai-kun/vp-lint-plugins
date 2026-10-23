@@ -104,10 +104,40 @@ function getBlankLineFix(
   return fixer.insertTextBeforeRange([lineEnd, lineEnd + 1], "\n");
 }
 
+/**
+ * 指定したノードと対象の間の空行を削除します。
+ */
+function getRemoveBlankLineFix(
+  fixer: Fixer,
+  sourceCode: SourceCode,
+  node: ESTree.Node,
+  target: ESTree.Node | Comment,
+): Fix | null {
+  if (target.loc.start.line <= node.loc.end.line + 1) {
+    return null;
+  }
+
+  const fromLineEnd = sourceCode.text.indexOf("\n", node.range[1]);
+
+  if (fromLineEnd === -1) {
+    return null;
+  }
+
+  const targetLineStart = sourceCode.text.lastIndexOf("\n", target.range[0]) + 1;
+  const indent = sourceCode.text.slice(targetLineStart, target.range[0]);
+
+  if (indent.trim() !== "") {
+    return null;
+  }
+
+  return fixer.replaceTextRange([fromLineEnd, target.range[0]], `\n${indent}`);
+}
+
 export {
   hasBlankLine,
   getBlankLineFix,
   getNextStatement,
   getInsertionTarget,
   getPreviousStatement,
+  getRemoveBlankLineFix,
 };

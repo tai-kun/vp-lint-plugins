@@ -2,7 +2,6 @@ import jsdocParamOrder from "../../src/rules/jsdoc-param-order.js";
 import { createRuleTester } from "../support/rule-tester.js";
 
 const ruleTester = createRuleTester();
-
 ruleTester.run("jsdoc-param-order", jsdocParamOrder, {
   valid: [
     "/**\n * @param a\n * @param b\n */\nfunction f(a: string, b: number): void {}",

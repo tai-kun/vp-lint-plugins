@@ -6,7 +6,7 @@ description: 連続する変数宣言の後に別の文が続く場合、空行�
 - ルール ID: `tai-kun/blank-line-after-variable-declaration`
 - 自動修正: あり
 
-`const`/`let`/`var` の宣言グループの後に、式文や関数宣言など別の種類の文が続く場合、空行を 1 行入れます。
+`const`/`let`/`var` の宣言グループの後に、式文や関数宣言など別の種類の文が続く場合、空行を 1 行入れます。宣言した変数を使う式文は同じグループとして扱うため、`ready.sort(compare)` のような後続処理の直後に空行が入ります。
 
 ## 設定 [#configuration]
 
@@ -21,22 +21,24 @@ description: 連続する変数宣言の後に別の文が続く場合、空行�
 ### 違反例 [#invalid]
 
 ```ts
-const a = 1;
-const b = 2;
-foo();
+const ready = getItems();
+
+ready.sort(compareNames);
+const sorted = [];
 ```
 
 ### 修正後 [#valid]
 
 ```ts
-const a = 1;
-const b = 2;
+const ready = getItems();
+ready.sort(compareNames);
 
-foo();
+const sorted = [];
 ```
 
 ## 注意 [#notes]
 
+- 宣言した変数を使う式文（例: `ready.sort(compare)`）は同じグループとして扱い、間の空行は削除します。
 - `export const` にも適用します。
 - 連続する変数宣言同士は同じグループとみなし、空行を要求しません。
 - `return` の直前は `blank-line-before-return` が担当するため、このルールでは対象外です。

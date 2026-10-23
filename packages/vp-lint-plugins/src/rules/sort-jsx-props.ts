@@ -130,7 +130,6 @@ const sortJsxProps = defineRule({
         const separator = multiline
           ? `\n${getLineIndent(sourceCode.text, firstAttribute.range[0])}`
           : " ";
-
         context.report({
           fix(fixer) {
             return fixer.replaceTextRange(
