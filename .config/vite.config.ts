@@ -329,7 +329,7 @@ export default defineConfig({
     ],
     overrides: [
       {
-        files: ["scripts/**/*.mjs"],
+        files: ["**/*.{js,mjs}"],
         rules: {
           // JavaScript の戻り値には型注釈がないため、値あり・なしの return を許可します。
           "typescript/consistent-return": "off",
