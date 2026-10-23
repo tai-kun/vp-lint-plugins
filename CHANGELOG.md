@@ -1,5 +1,13 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.3
+
+### バグ修正
+
+- sort-object-properties でグループ見出しコメントを保持する ([03e9e7d](https://github.com/tai-kun/vp-lint-plugins/commit/03e9e7d26caaa2f35ed82ba43c95645496a2810b))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.2...@tai-kun/vp-lint-plugins@0.0.3
+
 ## @tai-kun/vp-lint-plugins@0.0.2
 
 ### バグ修正
