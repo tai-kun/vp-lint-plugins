@@ -1,0 +1,42 @@
+---
+title: sort-import-export-specifiers
+description: import/export の specifier をグループ順、名前の長さ順、名前順に並べます。
+---
+
+- ルール ID: `tai-kun/sort-import-export-specifiers`
+- 自動修正: あり
+
+波括弧内の specifier を「型 → 値 → default」のグループ順に並べ、各グループ内では名前の長さが短い順、同じ長さなら名前順に並べます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/sort-import-export-specifiers": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+import { zebra, type Apple, default as base } from "module";
+```
+
+### 修正後 [#valid]
+
+```ts
+import { type Apple, zebra, default as base } from "module";
+```
+
+## 注意 [#notes]
+
+- namespace import や default import 自体は対象外です。
+- specifier の外側にあるコメントがある場合は、安全のため対象外です。
+- 単一行と複数行の区切りを保持します。
+
+## 関連ルール [#related-rules]
+
+- [`sort-jsx-props`](/rules/sort-jsx-props)
+- [`sort-object-properties`](/rules/sort-object-properties)

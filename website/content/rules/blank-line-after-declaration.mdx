@@ -1,0 +1,46 @@
+---
+title: blank-line-after-declaration
+description: 宣言の後に別の文が続く場合、空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-after-declaration`
+- 自動修正: あり
+
+関数、クラス、interface、type、enum、namespace などの宣言の直後に別の文がある場合、空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-after-declaration": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+function f() {}
+const value = 1;
+```
+
+### 修正後 [#valid]
+
+```ts
+function f() {}
+
+const value = 1;
+```
+
+## 注意 [#notes]
+
+- オーバーロード署名の後は対象外です。
+- `export` された宣言にも適用します。
+- 変数宣言の後は `blank-line-after-variable-declaration` が担当します。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-after-variable-declaration`](/rules/blank-line-after-variable-declaration)
+- [`blank-line-before-return`](/rules/blank-line-before-return)
+- [`blank-line-after-control-block`](/rules/blank-line-after-control-block)

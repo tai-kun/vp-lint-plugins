@@ -1,0 +1,49 @@
+---
+title: blank-line-after-control-block
+description: Require a blank line after a control block when another statement follows.
+---
+
+- Rule ID: `tai-kun/blank-line-after-control-block`
+- Auto-fix: Yes
+
+Requires one blank line after `if`, `for`, `for-in`, `for-of`, `while`, `do-while`, `switch`, and `try` blocks when another statement follows.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/blank-line-after-control-block": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+if (ok) {
+  run();
+}
+cleanup();
+```
+
+### Valid [#valid]
+
+```ts
+if (ok) {
+  run();
+}
+
+cleanup();
+```
+
+## Notes [#notes]
+
+- When a comment belongs to the next statement, the blank line goes before the comment.
+- Empty statements (`;`) are ignored.
+- The fix only inserts a line break; Oxfmt collapses extra blank lines.
+
+## Related rules [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-before-return`](/rules/blank-line-before-return)

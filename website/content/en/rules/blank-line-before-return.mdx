@@ -1,0 +1,48 @@
+---
+title: blank-line-before-return
+description: Require a blank line before a return statement when another statement precedes it.
+---
+
+- Rule ID: `tai-kun/blank-line-before-return`
+- Auto-fix: Yes
+
+Requires one blank line before `return` when the previous statement is ordinary processing such as an expression or variable declaration.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/blank-line-before-return": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+function f() {
+  const value = 1;
+  return value;
+}
+```
+
+### Valid [#valid]
+
+```ts
+function f() {
+  const value = 1;
+
+  return value;
+}
+```
+
+## Notes [#notes]
+
+- Control blocks, declarations, directives, and `throw`/`break`/`continue` are excluded.
+- When a comment belongs to the return statement, the blank line goes before the comment.
+
+## Related rules [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-after-variable-declaration`](/rules/blank-line-after-variable-declaration)

@@ -1,0 +1,49 @@
+---
+title: sort-object-properties
+description: オブジェクトのプロパティーを名前の長さ順、次に名前順に並べます。
+---
+
+- ルール ID: `tai-kun/sort-object-properties`
+- 自動修正: あり
+
+オブジェクトリテラルとオブジェクトパターンのプロパティーを、名前の長さが短い順、同じ長さなら名前順に並べます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/sort-object-properties": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+const value = {
+  zebra: 1,
+  a: 2,
+};
+```
+
+### 修正後 [#valid]
+
+```ts
+const value = {
+  a: 2,
+  zebra: 1,
+};
+```
+
+## 注意 [#notes]
+
+- 空行で区切られたグループ内だけで並べ替えます。
+- プロパティー直上のコメントはプロパティーと一緒に移動します。
+- computed key、`__proto__`、重複するキーを含むオブジェクトは対象外です。spread を含むオブジェクトリテラルも対象外です。
+- オブジェクトリテラルは複数行化も行います。
+
+## 関連ルール [#related-rules]
+
+- [`object-properties-newline`](/rules/object-properties-newline)
+- [`sort-type-members`](/rules/sort-type-members)

@@ -1,0 +1,44 @@
+---
+title: spaced-comment
+description: コメントの開始記号の直後と終了記号の直前に空白を要求します。
+---
+
+- ルール ID: `tai-kun/spaced-comment`
+- 自動修正: あり
+
+`//` や `/*` の直後、`*/` の直前に空白がないコメントを検出します。ディレクティブやライセンスコメントなど、意図的に空白を置かないコメントは除外します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/spaced-comment": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+//コメント
+/*コメント*/
+```
+
+### 修正後 [#valid]
+
+```ts
+// コメント
+/* コメント */
+```
+
+## 注意 [#notes]
+
+- `///`、`//!`、`//#`、`//@`、`/*!` で始まるコメントは除外します。
+- `//----` のような記号だけの装飾コメントも除外します。
+- JSDoc の `/**コメント*/` も対象です。
+
+## 関連ルール [#related-rules]
+
+- [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line)
+- [`comment-japanese-spacing`](/rules/comment-japanese-spacing)

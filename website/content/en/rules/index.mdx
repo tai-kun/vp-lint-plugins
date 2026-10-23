@@ -1,0 +1,82 @@
+---
+title: Rules
+description: All Oxlint rules provided by `@tai-kun/vp-lint-plugins`.
+---
+
+`@tai-kun/vp-lint-plugins` provides custom Oxlint rules for Vite+. Add the plugin to `lint.jsPlugins` in `vite.config.ts` to enable rules under the `tai-kun/` prefix.
+
+## Setup [#setup]
+
+```ts vite.config.ts
+import { defineConfig } from "vite-plus";
+
+export default defineConfig({
+  lint: {
+    jsPlugins: [
+      {
+        name: "tai-kun",
+        specifier: "@tai-kun/vp-lint-plugins",
+      },
+    ],
+    rules: {
+      "tai-kun/spaced-comment": "error",
+    },
+  },
+});
+```
+
+Reference each rule as `tai-kun/<rule-name>`. Most rules only insert minimal whitespace and leave final formatting to Oxfmt.
+
+:::note
+`jsdoc-tag-order`, `jsdoc-param-order`, and `member-ordering` are report-only and do not auto-fix.
+:::
+
+## Comments [#comments]
+
+| Rule                                                                    | Description                                                                     | Auto-fix            |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------- |
+| [`spaced-comment`](/rules/spaced-comment)                               | Require whitespace after the comment marker and before the closing marker.      | Yes                 |
+| [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line) | Enforce one sentence per comment line, optionally requiring ending punctuation. | Partial (join only) |
+| [`comment-japanese-spacing`](/rules/comment-japanese-spacing)           | Require a half-width space between Japanese and half-width characters.          | Yes                 |
+
+## JSDoc [#jsdoc]
+
+| Rule                                            | Description                                                       | Auto-fix |
+| ----------------------------------------------- | ----------------------------------------------------------------- | -------- |
+| [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)     | Normalize blank lines between a JSDoc description and tag groups. | Yes      |
+| [`jsdoc-tag-order`](/rules/jsdoc-tag-order)     | Enforce a consistent order of JSDoc tags.                         | No       |
+| [`jsdoc-param-order`](/rules/jsdoc-param-order) | Require `@param` tags to follow the order of function parameters. | No       |
+
+## Blank lines [#blank-lines]
+
+| Rule                                                                                    | Description                                                                             | Auto-fix |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------- |
+| [`blank-line-after-declaration`](/rules/blank-line-after-declaration)                   | Require a blank line after a declaration when another statement follows.                | Yes      |
+| [`blank-line-after-variable-declaration`](/rules/blank-line-after-variable-declaration) | Require a blank line after a variable declaration group when another statement follows. | Yes      |
+| [`blank-line-after-control-block`](/rules/blank-line-after-control-block)               | Require a blank line after a control block when another statement follows.              | Yes      |
+| [`blank-line-before-return`](/rules/blank-line-before-return)                           | Require a blank line before a return statement when another statement precedes it.      | Yes      |
+| [`blank-line-between-class-members`](/rules/blank-line-between-class-members)           | Require a blank line between class members.                                             | Yes      |
+| [`blank-line-between-switch-cases`](/rules/blank-line-between-switch-cases)             | Require a blank line between non-empty switch cases.                                    | Yes      |
+
+## Layout [#layout]
+
+| Rule                                                                        | Description                                                              | Auto-fix |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------- |
+| [`object-properties-newline`](/rules/object-properties-newline)             | Enforce multiline object literals when they have two or more properties. | Yes      |
+| [`type-literal-properties-newline`](/rules/type-literal-properties-newline) | Enforce multiline type literals when they have two or more members.      | Yes      |
+
+## Sorting [#sorting]
+
+| Rule                                                                    | Description                                                        | Auto-fix |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------ | -------- |
+| [`sort-object-properties`](/rules/sort-object-properties)               | Sort object properties by name length and then by name.            | Yes      |
+| [`sort-type-members`](/rules/sort-type-members)                         | Sort type literal members by name length and then by name.         | Yes      |
+| [`sort-jsx-props`](/rules/sort-jsx-props)                               | Sort JSX props by group, name length, and name.                    | Yes      |
+| [`sort-import-export-specifiers`](/rules/sort-import-export-specifiers) | Sort import and export specifiers by group, name length, and name. | Yes      |
+
+## Classes and functions [#classes]
+
+| Rule                                                                  | Description                                                                        | Auto-fix |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------- |
+| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent) | Require overload signatures to be adjacent to each other and their implementation. | Yes      |
+| [`member-ordering`](/rules/member-ordering)                           | Enforce a consistent order of class members.                                       | No       |

@@ -1,0 +1,49 @@
+---
+title: comment-one-sentence-per-line
+description: Enforce one sentence per comment line, optionally requiring ending punctuation.
+---
+
+- Rule ID: `tai-kun/comment-one-sentence-per-line`
+- Auto-fix: Partial (join only)
+
+Joins sentences that wrap across several comment lines. When `requireEndPunctuation` is enabled, prose lines that do not end with punctuation such as `。` or `.` are also reported.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/comment-one-sentence-per-line": ["error", { requireEndPunctuation: true }],
+```
+
+## Options [#options]
+
+| Option                  | Type      | Default | Description                                                     |
+| ----------------------- | --------- | ------- | --------------------------------------------------------------- |
+| `requireEndPunctuation` | `boolean` | `false` | Require ending punctuation on the last prose line of a comment. |
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+// This is a sentence that
+// wraps across two lines
+```
+
+### Valid [#valid]
+
+```ts
+// This is a sentence that wraps across two lines.
+```
+
+## Notes [#notes]
+
+- Directives, JSDoc tags, lists, code, code fences, and `@example` blocks are ignored.
+- Joining lines is auto-fixed, but missing ending punctuation is not.
+- `requireEndPunctuation` defaults to `false`.
+
+## Related rules [#related-rules]
+
+- [`spaced-comment`](/rules/spaced-comment)
+- [`comment-japanese-spacing`](/rules/comment-japanese-spacing)

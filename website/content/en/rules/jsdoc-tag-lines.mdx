@@ -1,0 +1,52 @@
+---
+title: jsdoc-tag-lines
+description: Normalize blank lines between a JSDoc description and tag groups.
+---
+
+- Rule ID: `tai-kun/jsdoc-tag-lines`
+- Auto-fix: Yes
+
+Requires one blank line between the description and the first tag, and between different tag groups. Blank lines inside the same tag group are removed.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/jsdoc-tag-lines": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+/**
+ * Get a value.
+ * @param value The value.
+ * @returns The result.
+ */
+```
+
+### Valid [#valid]
+
+```ts
+/**
+ * Get a value.
+ *
+ * @param value The value.
+ *
+ * @returns The result.
+ */
+```
+
+## Notes [#notes]
+
+- Comments containing `@example` or fenced code are ignored.
+- Blank lines inside the description are preserved.
+- The fix replaces the whole comment.
+
+## Related rules [#related-rules]
+
+- [`jsdoc-tag-order`](/rules/jsdoc-tag-order)
+- [`jsdoc-param-order`](/rules/jsdoc-param-order)

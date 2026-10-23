@@ -1,0 +1,49 @@
+---
+title: sort-object-properties
+description: Sort object properties by name length and then by name.
+---
+
+- Rule ID: `tai-kun/sort-object-properties`
+- Auto-fix: Yes
+
+Sorts properties in object literals and object patterns by name length, then alphabetically when lengths match.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/sort-object-properties": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+const value = {
+  zebra: 1,
+  a: 2,
+};
+```
+
+### Valid [#valid]
+
+```ts
+const value = {
+  a: 2,
+  zebra: 1,
+};
+```
+
+## Notes [#notes]
+
+- Only properties inside the same blank-line group are reordered.
+- Comments directly above a property move with it.
+- Computed keys, `__proto__`, and duplicate keys are skipped, as are object literals containing spread elements.
+- Object literals are also made multiline.
+
+## Related rules [#related-rules]
+
+- [`object-properties-newline`](/rules/object-properties-newline)
+- [`sort-type-members`](/rules/sort-type-members)

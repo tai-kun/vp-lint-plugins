@@ -1,0 +1,49 @@
+---
+title: blank-line-after-control-block
+description: 制御ブロックの後に別の文が続く場合、空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-after-control-block`
+- 自動修正: あり
+
+`if`、`for`、`for-in`、`for-of`、`while`、`do-while`、`switch`、`try` の直後に別の文がある場合、空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-after-control-block": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+if (ok) {
+  run();
+}
+cleanup();
+```
+
+### 修正後 [#valid]
+
+```ts
+if (ok) {
+  run();
+}
+
+cleanup();
+```
+
+## 注意 [#notes]
+
+- 次の文に付くコメントがある場合は、コメントの前に空行を入れます。
+- 空文（`;`）は対象外です。
+- 自動修正は空行の挿入のみを行い、余分な空行は Oxfmt が 1 行に畳みます。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-before-return`](/rules/blank-line-before-return)

@@ -1,0 +1,49 @@
+---
+title: comment-one-sentence-per-line
+description: コメントを 1 行 1 文にし、必要に応じて文末の句読点を要求します。
+---
+
+- ルール ID: `tai-kun/comment-one-sentence-per-line`
+- 自動修正: 一部（行の結合のみ）
+
+複数行にまたがる文を検出して 1 行に結合します。`requireEndPunctuation` を有効にすると、散文コメントの最終行に `。` や `.` などの句読点がない場合も報告します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/comment-one-sentence-per-line": ["error", { requireEndPunctuation: true }],
+```
+
+## オプション [#options]
+
+| オプション              | 型        | 既定値  | 説明                                       |
+| ----------------------- | --------- | ------- | ------------------------------------------ |
+| `requireEndPunctuation` | `boolean` | `false` | 散文コメントの最終行に句読点を要求します。 |
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+// これは文の途中で
+// 改行されています
+```
+
+### 修正後 [#valid]
+
+```ts
+// これは文の途中で改行されています。
+```
+
+## 注意 [#notes]
+
+- ディレクティブ、JSDoc タグ、リスト、コード、コードフェンス、`@example` は対象外です。
+- 行の結合は自動修正されますが、文末の句読点は自動では追加されません。
+- `requireEndPunctuation` の既定値は `false` です。
+
+## 関連ルール [#related-rules]
+
+- [`spaced-comment`](/rules/spaced-comment)
+- [`comment-japanese-spacing`](/rules/comment-japanese-spacing)

@@ -1,0 +1,44 @@
+---
+title: object-properties-newline
+description: 2 つ以上のプロパティーを持つオブジェクトリテラルを複数行にします。
+---
+
+- ルール ID: `tai-kun/object-properties-newline`
+- 自動修正: あり
+
+プロパティーが 2 つ以上あるオブジェクトリテラルで、最初のプロパティーが `{` と同じ行にある場合、`{` の直後に改行を挿入します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/object-properties-newline": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+const value = { a: 1, b: 2 };
+```
+
+### 修正後 [#valid]
+
+```ts
+const value = {
+  a: 1,
+  b: 2,
+};
+```
+
+## 注意 [#notes]
+
+- 並び替え可能なオブジェクトは `sort-object-properties` が複数行化も担当するため、このルールでは報告しません。
+- Oxfmt の `objectWrap: "preserve"` と組み合わせて使用します。
+- 1 プロパティーのオブジェクトは対象外です。
+
+## 関連ルール [#related-rules]
+
+- [`sort-object-properties`](/rules/sort-object-properties)

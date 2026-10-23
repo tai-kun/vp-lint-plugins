@@ -1,0 +1,49 @@
+---
+title: jsdoc-tag-order
+description: Enforce a consistent order of JSDoc tags.
+---
+
+- Rule ID: `tai-kun/jsdoc-tag-order`
+- Auto-fix: No
+
+Requires tags to appear in the order `@template`/`@typeParam` → `@param` → `@default` → `@returns` → `@throws` → `@note` → `@deprecated` → `@internal`/`@beta` → `@see` → unknown tags.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/jsdoc-tag-order": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+/**
+ * @returns The result.
+ * @param value The value.
+ */
+```
+
+### Valid [#valid]
+
+```ts
+/**
+ * @param value The value.
+ *
+ * @returns The result.
+ */
+```
+
+## Notes [#notes]
+
+- This rule reports only; it does not auto-fix.
+- Comments containing `@example` or fenced code are ignored.
+- Unknown tags must come after known tags.
+
+## Related rules [#related-rules]
+
+- [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)
+- [`jsdoc-param-order`](/rules/jsdoc-param-order)

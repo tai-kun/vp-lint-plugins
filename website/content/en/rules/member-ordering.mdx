@@ -1,0 +1,64 @@
+---
+title: member-ordering
+description: Enforce a consistent order of class members.
+---
+
+- Rule ID: `tai-kun/member-ordering`
+- Auto-fix: No
+
+Requires class members in the order static fields → static blocks → instance fields → constructor → static methods → instance methods.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/member-ordering": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+class Service {
+  constructor() {}
+
+  value = 1;
+
+  static create() {
+    return new Service();
+  }
+
+  run() {}
+}
+```
+
+### Valid [#valid]
+
+```ts
+class Service {
+  static instances = 0;
+
+  value = 1;
+
+  constructor() {}
+
+  static create() {
+    return new Service();
+  }
+
+  run() {}
+}
+```
+
+## Notes [#notes]
+
+- This rule reports only; it does not auto-fix.
+- Index signatures are ignored.
+- Access modifiers (public/protected/private) do not affect the order.
+- Getters and setters are treated as methods.
+
+## Related rules [#related-rules]
+
+- [`blank-line-between-class-members`](/rules/blank-line-between-class-members)

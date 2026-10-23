@@ -1,0 +1,49 @@
+---
+title: blank-line-between-class-members
+description: クラスメンバーの間に空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-between-class-members`
+- 自動修正: あり
+
+クラス内のフィールド、コンストラクター、メソッドなどの間に空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-between-class-members": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+class A {
+  a = 1;
+  b() {}
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+class A {
+  a = 1;
+
+  b() {}
+}
+```
+
+## 注意 [#notes]
+
+- オーバーロード署名の後と、getter/setter のペアの間は対象外です。
+- デコレーター付きのメンバーでは、デコレーターの前に空行を入れます。
+- 報告位置は次のメンバーです。
+
+## 関連ルール [#related-rules]
+
+- [`member-ordering`](/rules/member-ordering)
+- [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)

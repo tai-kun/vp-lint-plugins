@@ -1,0 +1,50 @@
+---
+title: jsdoc-param-order
+description: JSDoc の `@param` タグが関数の引数の順序に従うことを要求します。
+---
+
+- ルール ID: `tai-kun/jsdoc-param-order`
+- 自動修正: なし
+
+`@param` タグの並びを関数シグネチャの引数順と比較し、順序が異なる場合に報告します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/jsdoc-param-order": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+/**
+ * @param b 2 つ目
+ * @param a 1 つ目
+ */
+function f(a: string, b: number): void {}
+```
+
+### 修正後 [#valid]
+
+```ts
+/**
+ * @param a 1 つ目
+ * @param b 2 つ目
+ */
+function f(a: string, b: number): void {}
+```
+
+## 注意 [#notes]
+
+- 関数宣言、クラスメソッド、export された関数に対応します。
+- 分割代入の引数、タグ数が引数数と一致しない場合、`options.foo` のようなネストしたタグは対象外です。
+- 報告のみで、自動修正は行いません。
+
+## 関連ルール [#related-rules]
+
+- [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)
+- [`jsdoc-tag-order`](/rules/jsdoc-tag-order)

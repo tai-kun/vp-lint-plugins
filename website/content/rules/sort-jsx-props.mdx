@@ -1,0 +1,48 @@
+---
+title: sort-jsx-props
+description: JSX の props をグループ順、名前の長さ順、名前順に並べます。
+---
+
+- ルール ID: `tai-kun/sort-jsx-props`
+- 自動修正: あり
+
+JSX の props を「一般 → `on*` → `aria-*` → `data-*`」のグループ順に並べ、各グループ内では名前の長さが短い順、同じ長さなら名前順に並べます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/sort-jsx-props": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```tsx
+const element = (
+  <button data-id="x" onClick={run} aria-label="実行">
+    OK
+  </button>
+);
+```
+
+### 修正後 [#valid]
+
+```tsx
+const element = (
+  <button onClick={run} aria-label="実行" data-id="x">
+    OK
+  </button>
+);
+```
+
+## 注意 [#notes]
+
+- spread props、重複する prop 名、属性間のコメントがある場合は対象外です。
+- 単一行と複数行の区切りを保持します。
+
+## 関連ルール [#related-rules]
+
+- [`sort-import-export-specifiers`](/rules/sort-import-export-specifiers)

@@ -1,0 +1,43 @@
+---
+title: type-literal-properties-newline
+description: Enforce multiline type literals when they have two or more members.
+---
+
+- Rule ID: `tai-kun/type-literal-properties-newline`
+- Auto-fix: Yes
+
+Inserts a line break after `{` when a `type` literal has two or more members and the first member starts on the same line as the brace.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/type-literal-properties-newline": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+type Options = { a: string; b: number };
+```
+
+### Valid [#valid]
+
+```ts
+type Options = {
+  a: string;
+  b: number;
+};
+```
+
+## Notes [#notes]
+
+- `interface` declarations are excluded because Oxfmt always prints them multiline.
+- Use it together with `sort-type-members`.
+
+## Related rules [#related-rules]
+
+- [`sort-type-members`](/rules/sort-type-members)

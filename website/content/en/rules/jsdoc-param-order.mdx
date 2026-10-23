@@ -1,0 +1,50 @@
+---
+title: jsdoc-param-order
+description: Require `@param` tags to follow the order of function parameters.
+---
+
+- Rule ID: `tai-kun/jsdoc-param-order`
+- Auto-fix: No
+
+Compares the order of `@param` tags with the function signature and reports the first mismatch.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/jsdoc-param-order": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+/**
+ * @param b The second parameter.
+ * @param a The first parameter.
+ */
+function f(a: string, b: number): void {}
+```
+
+### Valid [#valid]
+
+```ts
+/**
+ * @param a The first parameter.
+ * @param b The second parameter.
+ */
+function f(a: string, b: number): void {}
+```
+
+## Notes [#notes]
+
+- Supports function declarations, class methods, and exported functions.
+- Destructured parameters, missing or extra tags, and nested tags such as `options.foo` are ignored.
+- This rule reports only; it does not auto-fix.
+
+## Related rules [#related-rules]
+
+- [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)
+- [`jsdoc-tag-order`](/rules/jsdoc-tag-order)

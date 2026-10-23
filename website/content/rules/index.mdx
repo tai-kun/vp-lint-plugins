@@ -1,0 +1,82 @@
+---
+title: ルール
+description: パッケージ `@tai-kun/vp-lint-plugins` が提供する Oxlint ルールの一覧です。
+---
+
+`@tai-kun/vp-lint-plugins` は、Vite+（Oxlint）向けの独自ルールをまとめたプラグインです。`vite.config.ts` の `lint.jsPlugins` に追加すると、`tai-kun/` プレフィックスのルールを有効にできます。
+
+## セットアップ [#setup]
+
+```ts vite.config.ts
+import { defineConfig } from "vite-plus";
+
+export default defineConfig({
+  lint: {
+    jsPlugins: [
+      {
+        name: "tai-kun",
+        specifier: "@tai-kun/vp-lint-plugins",
+      },
+    ],
+    rules: {
+      "tai-kun/spaced-comment": "error",
+    },
+  },
+});
+```
+
+各ルールは `tai-kun/<ルール名>` で指定します。ルールの多くはレイアウト用で、最小限の空白や改行を挿入したあと、最終的な整形は Oxfmt に任せます。
+
+:::note
+`jsdoc-tag-order`、`jsdoc-param-order`、`member-ordering` は報告のみで、自動修正は行いません。
+:::
+
+## コメント [#comments]
+
+| ルール                                                                  | 内容                                                             | 自動修正             |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------- |
+| [`spaced-comment`](/rules/spaced-comment)                               | コメントの開始記号の直後と終了記号の直前に空白を要求します。     | あり                 |
+| [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line) | コメントを 1 行 1 文にし、必要に応じて文末の句読点を要求します。 | 一部（行の結合のみ） |
+| [`comment-japanese-spacing`](/rules/comment-japanese-spacing)           | 日本語と半角文字の間に半角スペースを 1 つ要求します。            | あり                 |
+
+## JSDoc [#jsdoc]
+
+| ルール                                          | 内容                                                            | 自動修正 |
+| ----------------------------------------------- | --------------------------------------------------------------- | -------- |
+| [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)     | JSDoc の description とタグ、タググループの間の空行を揃えます。 | あり     |
+| [`jsdoc-tag-order`](/rules/jsdoc-tag-order)     | JSDoc タグの順序を統一します。                                  | なし     |
+| [`jsdoc-param-order`](/rules/jsdoc-param-order) | `@param` タグが関数の引数の順序に従うことを要求します。         | なし     |
+
+## 空行 [#blank-lines]
+
+| ルール                                                                                  | 内容                                                       | 自動修正 |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------- |
+| [`blank-line-after-declaration`](/rules/blank-line-after-declaration)                   | 宣言の後に別の文が続く場合、空行を要求します。             | あり     |
+| [`blank-line-after-variable-declaration`](/rules/blank-line-after-variable-declaration) | 連続する変数宣言の後に別の文が続く場合、空行を要求します。 | あり     |
+| [`blank-line-after-control-block`](/rules/blank-line-after-control-block)               | 制御ブロックの後に別の文が続く場合、空行を要求します。     | あり     |
+| [`blank-line-before-return`](/rules/blank-line-before-return)                           | return の直前に別の文がある場合、空行を要求します。        | あり     |
+| [`blank-line-between-class-members`](/rules/blank-line-between-class-members)           | クラスメンバーの間に空行を要求します。                     | あり     |
+| [`blank-line-between-switch-cases`](/rules/blank-line-between-switch-cases)             | 空でない switch の case の間に空行を要求します。           | あり     |
+
+## レイアウト [#layout]
+
+| ルール                                                                      | 内容                                                               | 自動修正 |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------- |
+| [`object-properties-newline`](/rules/object-properties-newline)             | 2 つ以上のプロパティーを持つオブジェクトリテラルを複数行にします。 | あり     |
+| [`type-literal-properties-newline`](/rules/type-literal-properties-newline) | 2 つ以上のメンバーを持つ型リテラルを複数行にします。               | あり     |
+
+## 並び替え [#sorting]
+
+| ルール                                                                  | 内容                                                                      | 自動修正 |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+| [`sort-object-properties`](/rules/sort-object-properties)               | オブジェクトのプロパティーを名前の長さ順、次に名前順に並べます。          | あり     |
+| [`sort-type-members`](/rules/sort-type-members)                         | 型リテラルのメンバーを名前の長さ順、次に名前順に並べます。                | あり     |
+| [`sort-jsx-props`](/rules/sort-jsx-props)                               | JSX の props をグループ順、名前の長さ順、名前順に並べます。               | あり     |
+| [`sort-import-export-specifiers`](/rules/sort-import-export-specifiers) | import/export の specifier をグループ順、名前の長さ順、名前順に並べます。 | あり     |
+
+## クラス・関数 [#classes]
+
+| ルール                                                                | 内容                                             | 自動修正 |
+| --------------------------------------------------------------------- | ------------------------------------------------ | -------- |
+| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent) | オーバーロード署名と実装の間の空行を禁止します。 | あり     |
+| [`member-ordering`](/rules/member-ordering)                           | クラスメンバーの順序を統一します。               | なし     |

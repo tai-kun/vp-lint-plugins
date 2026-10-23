@@ -1,0 +1,49 @@
+---
+title: overload-signatures-adjacent
+description: Require overload signatures to be adjacent to each other and their implementation.
+---
+
+- Rule ID: `tai-kun/overload-signatures-adjacent`
+- Auto-fix: Yes
+
+Removes blank lines between overload signatures and between the last signature and its implementation.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/overload-signatures-adjacent": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+function parse(value: string): string;
+
+function parse(value: number): number;
+function parse(value: string | number): string | number {
+  return value;
+}
+```
+
+### Valid [#valid]
+
+```ts
+function parse(value: string): string;
+function parse(value: number): number;
+function parse(value: string | number): string | number {
+  return value;
+}
+```
+
+## Notes [#notes]
+
+- Supports function declarations, exported functions, and class methods.
+- Comments between signatures cause the pair to be skipped.
+
+## Related rules [#related-rules]
+
+- [`blank-line-between-class-members`](/rules/blank-line-between-class-members)

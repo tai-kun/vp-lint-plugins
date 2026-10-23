@@ -1,0 +1,49 @@
+---
+title: blank-line-between-class-members
+description: Require a blank line between class members.
+---
+
+- Rule ID: `tai-kun/blank-line-between-class-members`
+- Auto-fix: Yes
+
+Requires one blank line between fields, constructors, methods, and other class members.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/blank-line-between-class-members": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+class A {
+  a = 1;
+  b() {}
+}
+```
+
+### Valid [#valid]
+
+```ts
+class A {
+  a = 1;
+
+  b() {}
+}
+```
+
+## Notes [#notes]
+
+- Nothing is required after overload signatures or between getter/setter pairs.
+- For decorated members, the blank line goes before the decorator.
+- The diagnostic is reported on the following member.
+
+## Related rules [#related-rules]
+
+- [`member-ordering`](/rules/member-ordering)
+- [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)

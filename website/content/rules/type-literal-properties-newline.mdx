@@ -1,0 +1,43 @@
+---
+title: type-literal-properties-newline
+description: 2 つ以上のメンバーを持つ型リテラルを複数行にします。
+---
+
+- ルール ID: `tai-kun/type-literal-properties-newline`
+- 自動修正: あり
+
+メンバーが 2 つ以上ある `type` リテラルで、最初のメンバーが `{` と同じ行にある場合、`{` の直後に改行を挿入します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/type-literal-properties-newline": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+type Options = { a: string; b: number };
+```
+
+### 修正後 [#valid]
+
+```ts
+type Options = {
+  a: string;
+  b: number;
+};
+```
+
+## 注意 [#notes]
+
+- `interface` は Oxfmt が常に複数行にするため、このルールの対象外です。
+- `sort-type-members` と併用できます。
+
+## 関連ルール [#related-rules]
+
+- [`sort-type-members`](/rules/sort-type-members)

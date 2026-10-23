@@ -1,0 +1,52 @@
+---
+title: blank-line-between-switch-cases
+description: 空でない switch の case の間に空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-between-switch-cases`
+- 自動修正: あり
+
+`switch` の空でない `case` と次の `case` の間に空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-between-switch-cases": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+switch (value) {
+  case 1:
+    a();
+  case 2:
+    b();
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+switch (value) {
+  case 1:
+    a();
+
+  case 2:
+    b();
+}
+```
+
+## 注意 [#notes]
+
+- 連続する空の case（フォールスルー）は対象外です。
+- `default` も通常の case と同様に扱います。
+- 次の case に付くコメントがある場合は、コメントの前に空行を入れます。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-after-control-block`](/rules/blank-line-after-control-block)

@@ -1,0 +1,52 @@
+---
+title: jsdoc-tag-lines
+description: JSDoc の description とタグ、タググループの間の空行を揃えます。
+---
+
+- ルール ID: `tai-kun/jsdoc-tag-lines`
+- 自動修正: あり
+
+description と最初のタグの間、および異なるタググループの間には空行を 1 行入れます。同じタググループ内の空行は削除します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/jsdoc-tag-lines": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+/**
+ * 値を取得します。
+ * @param value 値
+ * @returns 結果
+ */
+```
+
+### 修正後 [#valid]
+
+```ts
+/**
+ * 値を取得します。
+ *
+ * @param value 値
+ *
+ * @returns 結果
+ */
+```
+
+## 注意 [#notes]
+
+- `@example` やコードフェンスを含むコメントは対象外です。
+- description 内の空行は保持します。
+- コメント全体を置き換える自動修正を行います。
+
+## 関連ルール [#related-rules]
+
+- [`jsdoc-tag-order`](/rules/jsdoc-tag-order)
+- [`jsdoc-param-order`](/rules/jsdoc-param-order)

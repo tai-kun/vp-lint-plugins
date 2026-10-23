@@ -1,0 +1,64 @@
+---
+title: member-ordering
+description: クラスメンバーの順序を統一します。
+---
+
+- ルール ID: `tai-kun/member-ordering`
+- 自動修正: なし
+
+クラスメンバーを `static` フィールド → `static` ブロック → インスタンスフィールド → constructor → `static` メソッド → インスタンスメソッドの順に要求します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/member-ordering": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+class Service {
+  constructor() {}
+
+  value = 1;
+
+  static create() {
+    return new Service();
+  }
+
+  run() {}
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+class Service {
+  static instances = 0;
+
+  value = 1;
+
+  constructor() {}
+
+  static create() {
+    return new Service();
+  }
+
+  run() {}
+}
+```
+
+## 注意 [#notes]
+
+- 報告のみで、自動修正は行いません。
+- index signature は順序の判定に含めません。
+- アクセス修飾子（public/protected/private）は順序の判定に含めません。
+- getter/setter はメソッドとして扱います。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-between-class-members`](/rules/blank-line-between-class-members)

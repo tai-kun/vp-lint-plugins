@@ -1,0 +1,47 @@
+---
+title: blank-line-after-variable-declaration
+description: 連続する変数宣言の後に別の文が続く場合、空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-after-variable-declaration`
+- 自動修正: あり
+
+`const`/`let`/`var` の宣言グループの後に、式文や関数宣言など別の種類の文が続く場合、空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-after-variable-declaration": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+const a = 1;
+const b = 2;
+foo();
+```
+
+### 修正後 [#valid]
+
+```ts
+const a = 1;
+const b = 2;
+
+foo();
+```
+
+## 注意 [#notes]
+
+- `export const` にも適用します。
+- 連続する変数宣言同士は同じグループとみなし、空行を要求しません。
+- `return` の直前は `blank-line-before-return` が担当するため、このルールでは対象外です。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-before-return`](/rules/blank-line-before-return)

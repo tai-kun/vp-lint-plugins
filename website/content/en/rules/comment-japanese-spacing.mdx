@@ -1,0 +1,42 @@
+---
+title: comment-japanese-spacing
+description: Require a half-width space between Japanese and half-width characters.
+---
+
+- Rule ID: `tai-kun/comment-japanese-spacing`
+- Auto-fix: Yes
+
+Fixes missing spaces between Japanese characters and half-width letters, digits, and technical symbols. Full-width or repeated spaces at those boundaries are normalized to one half-width space.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/comment-japanese-spacing": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+// Vite+のlintを実行します
+```
+
+### Valid [#valid]
+
+```ts
+// Vite+ の lint を実行します。
+```
+
+## Notes [#notes]
+
+- Characters around `、`, `。`, `（`, `）`, `「`, and `」` are excluded.
+- Inline code, URLs, code fences, and `@example` blocks are protected.
+- Full-width spaces and repeated spaces are normalized to one space.
+
+## Related rules [#related-rules]
+
+- [`spaced-comment`](/rules/spaced-comment)
+- [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line)

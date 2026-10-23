@@ -1,0 +1,49 @@
+---
+title: overload-signatures-adjacent
+description: オーバーロード署名と実装の間の空行を禁止します。
+---
+
+- ルール ID: `tai-kun/overload-signatures-adjacent`
+- 自動修正: あり
+
+オーバーロード署名同士、および最後の署名と実装の間に空行がある場合、その空行を削除します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/overload-signatures-adjacent": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+function parse(value: string): string;
+
+function parse(value: number): number;
+function parse(value: string | number): string | number {
+  return value;
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+function parse(value: string): string;
+function parse(value: number): number;
+function parse(value: string | number): string | number {
+  return value;
+}
+```
+
+## 注意 [#notes]
+
+- 関数宣言、export された関数、クラスメソッドに対応します。
+- 署名の間にコメントがある場合は、安全のため対象外です。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-between-class-members`](/rules/blank-line-between-class-members)

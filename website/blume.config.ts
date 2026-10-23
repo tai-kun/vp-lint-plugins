@@ -2,15 +2,15 @@ import { typeTableDetailsIds, routeByBrowserLanguage } from "@tai-kun/blume-inte
 import { defineConfig } from "blume";
 import { filesystem, githubReleases } from "blume/sources";
 
-const PROJET_NAME = "ts-template";
-const GITHUB_REPO = "ts-template";
+const PROJECT_NAME = "tai-kun's Vite+ Lint Plugins";
+const GITHUB_REPO = "vp-lint-plugins";
 const GITHUB_OWNER = "tai-kun";
 
 export default defineConfig({
   integrations: [typeTableDetailsIds(), routeByBrowserLanguage()],
 
-  title: PROJET_NAME,
-  description: `Documentation for ${PROJET_NAME}`,
+  title: PROJECT_NAME,
+  description: `Documentation for ${PROJECT_NAME}`,
 
   content: {
     sources: [

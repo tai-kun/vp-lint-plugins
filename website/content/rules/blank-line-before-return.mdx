@@ -1,0 +1,48 @@
+---
+title: blank-line-before-return
+description: return の直前に別の文がある場合、空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line-before-return`
+- 自動修正: あり
+
+`return` の直前に式文や変数宣言などの処理がある場合、空行を 1 行入れます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/blank-line-before-return": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+function f() {
+  const value = 1;
+  return value;
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+function f() {
+  const value = 1;
+
+  return value;
+}
+```
+
+## 注意 [#notes]
+
+- 直前が制御ブロック、宣言、ディレクティブ、`throw`/`break`/`continue` などの場合は対象外です。
+- return に付くコメントがある場合は、コメントの前に空行を入れます。
+
+## 関連ルール [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-after-variable-declaration`](/rules/blank-line-after-variable-declaration)

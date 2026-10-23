@@ -1,0 +1,49 @@
+---
+title: sort-type-members
+description: 型リテラルのメンバーを名前の長さ順、次に名前順に並べます。
+---
+
+- ルール ID: `tai-kun/sort-type-members`
+- 自動修正: あり
+
+`type` リテラルのメンバーを、名前の長さが短い順、同じ長さなら名前順に並べます。`interface` は対象外です。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/sort-type-members": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+type Options = {
+  zebra: string;
+  a: number;
+};
+```
+
+### 修正後 [#valid]
+
+```ts
+type Options = {
+  a: number;
+  zebra: string;
+};
+```
+
+## 注意 [#notes]
+
+- index signature、call signature、construct signature はバリアとして扱い、並べ替えません。
+- 空行グループと直上のコメントは保持します。
+- 同名のメソッド（オーバーロード）を含むグループは並べ替えません。
+- `interface` は対象外です。
+
+## 関連ルール [#related-rules]
+
+- [`type-literal-properties-newline`](/rules/type-literal-properties-newline)
+- [`sort-object-properties`](/rules/sort-object-properties)

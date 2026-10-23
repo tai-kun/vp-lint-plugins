@@ -1,0 +1,42 @@
+---
+title: comment-japanese-spacing
+description: 日本語と半角文字の間に半角スペースを 1 つ要求します。
+---
+
+- ルール ID: `tai-kun/comment-japanese-spacing`
+- 自動修正: あり
+
+日本語の文字と半角英数字などの間にスペースがない場合、または全角スペースや連続するスペースがある場合に、半角スペース 1 つへ修正します。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/comment-japanese-spacing": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+// Vite+のlintを実行します
+```
+
+### 修正後 [#valid]
+
+```ts
+// Vite+ の lint を実行します。
+```
+
+## 注意 [#notes]
+
+- `、` `。` `（` `）` `「` `」` の前後は対象外です。
+- インラインコード、URL、コードフェンス、`@example` の内容は変更しません。
+- 全角スペースや複数のスペースは半角スペース 1 つに修正します。
+
+## 関連ルール [#related-rules]
+
+- [`spaced-comment`](/rules/spaced-comment)
+- [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line)

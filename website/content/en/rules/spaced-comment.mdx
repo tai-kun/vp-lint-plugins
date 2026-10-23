@@ -1,0 +1,44 @@
+---
+title: spaced-comment
+description: Require whitespace after the comment marker and before the closing marker.
+---
+
+- Rule ID: `tai-kun/spaced-comment`
+- Auto-fix: Yes
+
+Reports comments without whitespace after `//` or `/*`, or before `*/`. Comments that intentionally omit the space, such as directives and license banners, are exempt.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/spaced-comment": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+//comment
+/*comment*/
+```
+
+### Valid [#valid]
+
+```ts
+// comment
+/* comment */
+```
+
+## Notes [#notes]
+
+- Comments starting with `///`, `//!`, `//#`, `//@`, or `/*!` are exempt.
+- Decorative comments made only of punctuation, such as `//----`, are exempt.
+- JSDoc comments like `/**comment*/` are also checked.
+
+## Related rules [#related-rules]
+
+- [`comment-one-sentence-per-line`](/rules/comment-one-sentence-per-line)
+- [`comment-japanese-spacing`](/rules/comment-japanese-spacing)

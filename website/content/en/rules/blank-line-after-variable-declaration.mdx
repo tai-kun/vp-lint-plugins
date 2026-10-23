@@ -1,0 +1,47 @@
+---
+title: blank-line-after-variable-declaration
+description: Require a blank line after a variable declaration group when another statement follows.
+---
+
+- Rule ID: `tai-kun/blank-line-after-variable-declaration`
+- Auto-fix: Yes
+
+Requires one blank line after a group of `const`, `let`, or `var` declarations when a different kind of statement follows.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/blank-line-after-variable-declaration": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+const a = 1;
+const b = 2;
+foo();
+```
+
+### Valid [#valid]
+
+```ts
+const a = 1;
+const b = 2;
+
+foo();
+```
+
+## Notes [#notes]
+
+- Exported variable declarations are also checked.
+- Consecutive variable declarations are treated as one group.
+- `return` is excluded because `blank-line-before-return` handles it.
+
+## Related rules [#related-rules]
+
+- [`blank-line-after-declaration`](/rules/blank-line-after-declaration)
+- [`blank-line-before-return`](/rules/blank-line-before-return)

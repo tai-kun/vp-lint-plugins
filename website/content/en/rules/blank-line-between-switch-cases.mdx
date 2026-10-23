@@ -1,0 +1,52 @@
+---
+title: blank-line-between-switch-cases
+description: Require a blank line between non-empty switch cases.
+---
+
+- Rule ID: `tai-kun/blank-line-between-switch-cases`
+- Auto-fix: Yes
+
+Requires one blank line between a non-empty `case` and the following `case`.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/blank-line-between-switch-cases": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+switch (value) {
+  case 1:
+    a();
+  case 2:
+    b();
+}
+```
+
+### Valid [#valid]
+
+```ts
+switch (value) {
+  case 1:
+    a();
+
+  case 2:
+    b();
+}
+```
+
+## Notes [#notes]
+
+- Empty fallthrough cases are ignored.
+- `default` is treated like any other case.
+- When a comment belongs to the next case, the blank line goes before the comment.
+
+## Related rules [#related-rules]
+
+- [`blank-line-after-control-block`](/rules/blank-line-after-control-block)

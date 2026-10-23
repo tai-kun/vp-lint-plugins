@@ -1,0 +1,42 @@
+---
+title: sort-import-export-specifiers
+description: Sort import and export specifiers by group, name length, and name.
+---
+
+- Rule ID: `tai-kun/sort-import-export-specifiers`
+- Auto-fix: Yes
+
+Sorts specifiers inside braces in the group order type → value → default, then by name length and name inside each group.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/sort-import-export-specifiers": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+import { zebra, type Apple, default as base } from "module";
+```
+
+### Valid [#valid]
+
+```ts
+import { type Apple, zebra, default as base } from "module";
+```
+
+## Notes [#notes]
+
+- Namespace and default imports themselves are excluded.
+- Comments outside the specifiers cause the declaration to be skipped.
+- Single-line and multiline layouts are preserved.
+
+## Related rules [#related-rules]
+
+- [`sort-jsx-props`](/rules/sort-jsx-props)
+- [`sort-object-properties`](/rules/sort-object-properties)

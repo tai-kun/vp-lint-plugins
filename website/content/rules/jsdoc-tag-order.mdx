@@ -1,0 +1,49 @@
+---
+title: jsdoc-tag-order
+description: JSDoc タグの順序を統一します。
+---
+
+- ルール ID: `tai-kun/jsdoc-tag-order`
+- 自動修正: なし
+
+JSDoc のタグを `@template`/`@typeParam` → `@param` → `@default` → `@returns` → `@throws` → `@note` → `@deprecated` → `@internal`/`@beta` → `@see` → 未知タグの順に並べます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/jsdoc-tag-order": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+/**
+ * @returns 結果
+ * @param value 値
+ */
+```
+
+### 修正後 [#valid]
+
+```ts
+/**
+ * @param value 値
+ *
+ * @returns 結果
+ */
+```
+
+## 注意 [#notes]
+
+- 報告のみで、自動修正は行いません。
+- `@example` やコードフェンスを含むコメントは対象外です。
+- 未知のタグは既知のタグより後ろに置きます。
+
+## 関連ルール [#related-rules]
+
+- [`jsdoc-tag-lines`](/rules/jsdoc-tag-lines)
+- [`jsdoc-param-order`](/rules/jsdoc-param-order)

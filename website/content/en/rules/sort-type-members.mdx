@@ -1,0 +1,49 @@
+---
+title: sort-type-members
+description: Sort type literal members by name length and then by name.
+---
+
+- Rule ID: `tai-kun/sort-type-members`
+- Auto-fix: Yes
+
+Sorts members of `type` literals by name length, then alphabetically when lengths match. `interface` declarations are excluded.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/sort-type-members": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+type Options = {
+  zebra: string;
+  a: number;
+};
+```
+
+### Valid [#valid]
+
+```ts
+type Options = {
+  a: number;
+  zebra: string;
+};
+```
+
+## Notes [#notes]
+
+- Index, call, and construct signatures act as barriers and are not reordered.
+- Blank-line groups and attached comments are preserved.
+- Groups containing duplicate method names (overloads) are skipped.
+- `interface` declarations are excluded.
+
+## Related rules [#related-rules]
+
+- [`type-literal-properties-newline`](/rules/type-literal-properties-newline)
+- [`sort-object-properties`](/rules/sort-object-properties)
