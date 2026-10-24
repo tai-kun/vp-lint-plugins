@@ -1,5 +1,13 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.4
+
+### 新機能
+
+- 同じモジュールを指す連続した import 宣言を 1 つにまとめるプラグインを追加 ([e56d0af](https://github.com/tai-kun/vp-lint-plugins/commit/e56d0af3700c36f8a9021280162dd3f4128af402))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.3...@tai-kun/vp-lint-plugins@0.0.4
+
 ## @tai-kun/vp-lint-plugins@0.0.3
 
 ### バグ修正
