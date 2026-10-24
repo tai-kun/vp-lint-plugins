@@ -12,6 +12,7 @@ import jsdocParamOrder from "./rules/jsdoc-param-order.js";
 import jsdocTagLines from "./rules/jsdoc-tag-lines.js";
 import jsdocTagOrder from "./rules/jsdoc-tag-order.js";
 import memberOrdering from "./rules/member-ordering.js";
+import mergeImports from "./rules/merge-imports.js";
 import objectPropertiesNewline from "./rules/object-properties-newline.js";
 import overloadSignaturesAdjacent from "./rules/overload-signatures-adjacent.js";
 import sortImportExportSpecifiers from "./rules/sort-import-export-specifiers.js";
@@ -24,6 +25,7 @@ import typeLiteralPropertiesNewline from "./rules/type-literal-properties-newlin
 export default definePlugin({
   meta: { name: "tai-kun" },
   rules: {
+    "merge-imports": mergeImports,
     "sort-jsx-props": sortJsxProps,
     "spaced-comment": spacedComment,
     "jsdoc-tag-lines": jsdocTagLines,

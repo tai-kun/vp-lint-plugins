@@ -10,6 +10,7 @@ export { default as jsdocParamOrder } from "./rules/jsdoc-param-order.js";
 export { default as jsdocTagLines } from "./rules/jsdoc-tag-lines.js";
 export { default as jsdocTagOrder } from "./rules/jsdoc-tag-order.js";
 export { default as memberOrdering } from "./rules/member-ordering.js";
+export { default as mergeImports } from "./rules/merge-imports.js";
 export { default as objectPropertiesNewline } from "./rules/object-properties-newline.js";
 export { default as overloadSignaturesAdjacent } from "./rules/overload-signatures-adjacent.js";
 export { default as sortImportExportSpecifiers } from "./rules/sort-import-export-specifiers.js";

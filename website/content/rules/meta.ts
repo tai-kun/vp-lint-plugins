@@ -17,6 +17,7 @@ export default defineMeta({
     "blank-line-between-switch-cases",
     "object-properties-newline",
     "type-literal-properties-newline",
+    "merge-imports",
     "sort-object-properties",
     "sort-type-members",
     "sort-jsx-props",

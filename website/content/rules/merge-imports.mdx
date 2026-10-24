@@ -1,0 +1,57 @@
+---
+title: merge-imports
+description: 同じモジュールを指す連続した import 宣言を 1 つにまとめます。
+---
+
+- ルール ID: `tai-kun/merge-imports`
+- 自動修正: あり
+
+同じモジュールを指す連続した import 宣言を 1 つにまとめます。default import と名前付き import も 1 つの宣言にできます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/merge-imports": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+import value from "module";
+import { a } from "module";
+import { b } from "module";
+```
+
+### 修正後 [#valid]
+
+```ts
+import value, { a, b } from "module";
+```
+
+型のみの import と値の import もまとめられます。
+
+```ts
+import type { A } from "module";
+import { b } from "module";
+```
+
+```ts
+import { type A, b } from "module";
+```
+
+## 注意 [#notes]
+
+- 連続した import 宣言だけを対象にします。間に別の import や文が入る場合は、モジュールの評価順序を変えないようにまとめません。
+- 副作用だけの import（`import "module";`）、namespace import（`import * as namespace from "module";`）、別名の default import が複数ある場合は対象外です。
+- import 属性（`with { ... }`）が異なる宣言はまとめません。
+- specifier の外側にコメントがある場合は、コメントを失わないように対象外です。
+- 型のみの宣言と値の宣言をまとめる場合は、`type` を specifier に付けます。`import type Foo from "module";` と名前付き import をまとめる場合は `import { type default as Foo, ... }` に変換します。
+- 複数行の import は複数行のまま、末尾のカンマの有無も保ちます。
+
+## 関連ルール [#related-rules]
+
+- [`sort-import-export-specifiers`](/rules/sort-import-export-specifiers)

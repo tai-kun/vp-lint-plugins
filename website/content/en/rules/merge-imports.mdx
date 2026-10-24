@@ -1,0 +1,57 @@
+---
+title: merge-imports
+description: Merge consecutive import declarations that import from the same module.
+---
+
+- Rule ID: `tai-kun/merge-imports`
+- Auto-fix: Yes
+
+Merges consecutive import declarations that import from the same module. Default imports and named imports can be combined into a single declaration.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/merge-imports": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+import value from "module";
+import { a } from "module";
+import { b } from "module";
+```
+
+### Valid [#valid]
+
+```ts
+import value, { a, b } from "module";
+```
+
+Type-only imports can be merged with value imports as well.
+
+```ts
+import type { A } from "module";
+import { b } from "module";
+```
+
+```ts
+import { type A, b } from "module";
+```
+
+## Notes [#notes]
+
+- Only consecutive import declarations are merged. When another import or statement is in between, they are left alone so that module evaluation order does not change.
+- Side-effect-only imports (`import "module";`), namespace imports (`import * as namespace from "module";`), and multiple default imports with different local names are excluded.
+- Declarations with different import attributes (`with { ... }`) are not merged.
+- Declarations with comments outside their specifiers are skipped so that comments are not lost.
+- When a type-only declaration is merged with a value declaration, `type` is added to each specifier. Merging `import type Foo from "module";` with named imports produces `import { type default as Foo, ... }`.
+- Multiline imports stay multiline, and the presence of a trailing comma is preserved.
+
+## Related rules [#related-rules]
+
+- [`sort-import-export-specifiers`](/rules/sort-import-export-specifiers)
