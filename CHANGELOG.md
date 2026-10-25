@@ -1,5 +1,13 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.5
+
+### 新機能
+
+- 空行ルールを blank-line に統合し JSDoc 上の空行を要求する ([564d33b](https://github.com/tai-kun/vp-lint-plugins/commit/564d33be060e52dc60715a975875f1b8d527a4b3))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.4...@tai-kun/vp-lint-plugins@0.0.5
+
 ## @tai-kun/vp-lint-plugins@0.0.4
 
 ### 新機能
