@@ -1,6 +1,6 @@
 import type { ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
-import { isFence } from "./comment-utils.js";
+import { isFence } from "./_comment-utils.js";
 
 interface JSDocLine {
   content: string;

@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Comment, Location } from "vite-plus/lint/plugins";
 
-import type { CommentLine } from "./comment-utils.js";
+import type { CommentLine } from "./_comment-utils.js";
 import {
   isTag,
   isBlank,
@@ -14,7 +14,7 @@ import {
   getLineGroupInfos,
   getCommentLineInfos,
   isSkippableProseLine,
-} from "./comment-utils.js";
+} from "./_comment-utils.js";
 
 interface SentenceFix {
   end: number;

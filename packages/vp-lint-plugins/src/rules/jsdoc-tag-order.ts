@@ -1,6 +1,6 @@
 import { defineRule } from "vite-plus/lint/plugins";
 
-import { getJSDocLines, hasExampleOrFence } from "./jsdoc-utils.js";
+import { getJSDocLines, hasExampleOrFence } from "./_jsdoc-utils.js";
 
 const TAG_ORDER: Record<string, number> = {
   see: 70,

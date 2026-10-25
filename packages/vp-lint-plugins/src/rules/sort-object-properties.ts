@@ -1,6 +1,6 @@
 import { defineRule } from "vite-plus/lint/plugins";
 
-import { getSortPlan } from "./object-sort-utils.js";
+import { getSortPlan } from "./_object-sort-utils.js";
 
 /**
  * オブジェクトリテラルのプロパティーを、名前の長さが短い順、同じ長さなら名前順に並べます。

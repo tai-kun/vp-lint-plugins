@@ -8,7 +8,7 @@ import {
   getBlankLineFix,
   getInsertionTarget,
   getRemoveBlankLineFix,
-} from "./blank-line-utils.js";
+} from "./_blank-line-utils.js";
 
 type ControlStatement =
   | ESTree.DoWhileStatement

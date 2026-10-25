@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 
-import type { JSDocLine } from "./jsdoc-utils.js";
-import { getJSDocLines, hasExampleOrFence } from "./jsdoc-utils.js";
+import type { JSDocLine } from "./_jsdoc-utils.js";
+import { getJSDocLines, hasExampleOrFence } from "./_jsdoc-utils.js";
 
 interface Entry {
   groupId: number;

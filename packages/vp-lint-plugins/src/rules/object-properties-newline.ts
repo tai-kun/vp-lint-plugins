@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree } from "vite-plus/lint/plugins";
 
-import { getSortPlan } from "./object-sort-utils.js";
+import { getSortPlan } from "./_object-sort-utils.js";
 
 /**
  * 改行判定に必要な最小限のオブジェクト形状です。

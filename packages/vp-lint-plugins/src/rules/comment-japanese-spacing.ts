@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Comment, Context } from "vite-plus/lint/plugins";
 
-import type { CommentLine } from "./comment-utils.js";
+import type { CommentLine } from "./_comment-utils.js";
 import {
   isBlank,
   isFence,
@@ -9,7 +9,7 @@ import {
   isDirective,
   getLineGroupInfos,
   getCommentLineInfos,
-} from "./comment-utils.js";
+} from "./_comment-utils.js";
 
 interface SpacingEdit {
   end: number;

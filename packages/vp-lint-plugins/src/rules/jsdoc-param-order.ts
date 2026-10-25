@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, Context, SourceCode } from "vite-plus/lint/plugins";
 
-import { getNodeJSDoc, getParamName, getJSDocLines, hasExampleOrFence } from "./jsdoc-utils.js";
+import { getNodeJSDoc, getParamName, getJSDocLines, hasExampleOrFence } from "./_jsdoc-utils.js";
 
 function getParamNameFromPattern(param: ESTree.ParamPattern): string | null {
   if (param.type === "Identifier") {

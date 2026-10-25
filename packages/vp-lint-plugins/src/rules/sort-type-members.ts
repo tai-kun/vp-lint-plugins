@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Fix, ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
-import { compareNames } from "./object-sort-utils.js";
+import { compareNames } from "./_object-sort-utils.js";
 
 interface MemberUnit {
   endLine: number;
