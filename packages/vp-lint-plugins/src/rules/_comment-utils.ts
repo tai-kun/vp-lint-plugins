@@ -23,6 +23,7 @@ const DIRECTIVE_PREFIXES = [
   "@link",
   "TODO",
   "FIXME",
+  "#__PURE__",
   "NOTE",
   "HACK",
   "XXX",

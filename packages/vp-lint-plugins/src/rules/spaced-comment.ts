@@ -20,7 +20,7 @@ function isExemptLineComment(raw: string): boolean {
 }
 
 function isExemptBlockComment(raw: string): boolean {
-  return raw.startsWith("/*!");
+  return raw.startsWith("/*!") || raw.startsWith("/*#");
 }
 
 /**

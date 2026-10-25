@@ -29,6 +29,7 @@ const a = 1;
     `,
     "/*! license */",
     "/* */",
+    "/*#__PURE__*/",
   ],
   invalid: [
     {

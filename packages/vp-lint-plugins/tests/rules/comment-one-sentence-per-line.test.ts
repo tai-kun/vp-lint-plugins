@@ -91,6 +91,7 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
      * これは文の途中
      */
     `,
+    "/*#__PURE__*/",
   ],
   invalid: [
     {
@@ -228,6 +229,10 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
     },
     {
       code: "// [API Reference](https://example.com/)",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/*#__PURE__*/",
       options: [{ requireEndPunctuation: true }],
     },
     {
