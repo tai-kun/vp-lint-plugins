@@ -13,6 +13,8 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
     "/**\n * TODO: あとで直します。\n * これは説明です。\n */",
     "/**\n * @param value 値\n * @returns 結果\n */",
     "/**\n * メモ:\n * これは説明です。\n */",
+    "/**\n * 「注意:」\n * 必ず確認してください。\n */",
+    "// 理由は「A:」\n// 次の文です。",
     "/**\n * @example\n * const value = 1;\n * これは説明の続きです\n */",
     "// 「これは文です。」\n// これは説明です。",
     "/*\n  これは文の途中\n  改行されています。\n*/",
@@ -50,6 +52,10 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
   valid: [
     {
       code: "// これは文です。\nconst a = 1;",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "// 準備:\n// 内容です。",
       options: [{ requireEndPunctuation: true }],
     },
     {

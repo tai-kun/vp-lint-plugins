@@ -6,7 +6,7 @@ description: Enforce one sentence per comment line, optionally requiring ending 
 - Rule ID: `tai-kun/comment-one-sentence-per-line`
 - Auto-fix: Partial (join only)
 
-Joins sentences that wrap across several comment lines. When `requireEndPunctuation` is enabled, prose lines that do not end with punctuation such as `。` or `.` are also reported.
+Joins sentences that wrap across several comment lines. When `requireEndPunctuation` is enabled, prose lines that do not end with punctuation such as `。` or `.` are also reported. Lines ending with `:` or `：` are treated as sentence ends.
 
 ## Configuration [#configuration]
 
@@ -40,6 +40,7 @@ Add the rule to `lint.rules` in `vite.config.ts` to enable it.
 ## Notes [#notes]
 
 - Directives, JSDoc tags, lists, code, code fences, and `@example` blocks are ignored.
+- Lines ending with `:` or `：` (such as label lines) are treated as sentence ends and are not joined with the next line.
 - Joining lines is auto-fixed, but missing ending punctuation is not.
 - `requireEndPunctuation` defaults to `false`.
 
