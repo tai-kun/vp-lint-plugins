@@ -91,7 +91,11 @@ function hasBlankLine(node: ESTree.Node, target: ESTree.Node | Comment): boolean
  * コメントを挟む場合、前後の空行は任意とします。
  */
 function isComment(target: ESTree.Node | Comment): target is Comment {
-  const { type } = target as { type: string };
+  if (target === null || typeof target !== "object") {
+    return false;
+  }
+
+  const { type } = target as { type: unknown };
 
   return type === "Line" || type === "Block" || type === "Shebang";
 }
@@ -100,9 +104,15 @@ function isComment(target: ESTree.Node | Comment): target is Comment {
  * JSDoc 形式のブロックコメント（`/**` で始まる）かどうかを返します。
  *
  * JSDoc 形式のブロックコメントの 1 行上は空行にします。
+ * 実行時に値が null のコメントを受け取る場合があるため、文字列であることを確認します。
  */
 function isDocComment(target: ESTree.Node | Comment): target is Comment {
-  return isComment(target) && target.type === "Block" && target.value.startsWith("*");
+  return (
+    isComment(target) &&
+    target.type === "Block" &&
+    typeof target.value === "string" &&
+    target.value.startsWith("*")
+  );
 }
 
 function getBlankLineFix(
