@@ -4,46 +4,164 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("jsdoc-tag-lines", jsdocTagLines, {
   valid: [
-    "/**\n * 説明です。\n *\n * @param a\n * @param b\n *\n * @returns c\n */\nfunction f(a: string, b: number): string {\n  return a;\n}",
-    "/**\n * @param a\n *\n * @returns b\n */\nfunction f(a: string): string {\n  return a;\n}",
-    "/**\n * @see https://example.com\n * @see https://example.org\n */",
-    "/**\n * 説明です。\n */",
-    "/**\n * @example\n *\n * const a = 1;\n */",
+    `
+/**
+ * 説明です。
+ *
+ * @param a
+ * @param b
+ *
+ * @returns c
+ */
+function f(a: string, b: number): string {
+  return a;
+}
+    `,
+    `
+/**
+ * @param a
+ *
+ * @returns b
+ */
+function f(a: string): string {
+  return a;
+}
+    `,
+    `
+/**
+ * @see https://example.com
+ * @see https://example.org
+ */
+    `,
+    `
+/**
+ * 説明です。
+ */
+    `,
+    `
+/**
+ * @example
+ *
+ * const a = 1;
+ */
+    `,
     "/** @param a */",
-    "/**\n * 説明です。\n *\n * 続きです。\n *\n * @param a\n */",
+    `
+/**
+ * 説明です。
+ *
+ * 続きです。
+ *
+ * @param a
+ */
+    `,
   ],
   invalid: [
     {
-      code: "/**\n * 説明です。\n * @param a\n */\nfunction f(a: string): string {\n  return a;\n}",
+      code: `
+/**
+ * 説明です。
+ * @param a
+ */
+function f(a: string): string {
+  return a;
+}
+      `,
       errors: [{ messageId: "missingBlankLine" }],
-      output:
-        "/**\n * 説明です。\n *\n * @param a\n */\nfunction f(a: string): string {\n  return a;\n}",
+      output: `
+/**
+ * 説明です。
+ *
+ * @param a
+ */
+function f(a: string): string {
+  return a;
+}
+      `,
     },
     {
-      code: "/**\n * @param a\n * @returns b\n */\nfunction f(a: string): string {\n  return a;\n}",
+      code: `
+/**
+ * @param a
+ * @returns b
+ */
+function f(a: string): string {
+  return a;
+}
+      `,
       errors: [{ messageId: "missingBlankLine" }],
-      output:
-        "/**\n * @param a\n *\n * @returns b\n */\nfunction f(a: string): string {\n  return a;\n}",
+      output: `
+/**
+ * @param a
+ *
+ * @returns b
+ */
+function f(a: string): string {
+  return a;
+}
+      `,
     },
     {
-      code: "/**\n * @param a\n *\n * @param b\n */\nfunction f(a: string, b: number): void {}",
+      code: `
+/**
+ * @param a
+ *
+ * @param b
+ */
+function f(a: string, b: number): void {}
+      `,
       errors: [{ messageId: "unexpectedBlankLine" }],
-      output: "/**\n * @param a\n * @param b\n */\nfunction f(a: string, b: number): void {}",
+      output: `
+/**
+ * @param a
+ * @param b
+ */
+function f(a: string, b: number): void {}
+      `,
     },
     {
-      code: "/**\n * @returns a\n * @throws b\n */",
+      code: `
+/**
+ * @returns a
+ * @throws b
+ */
+      `,
       errors: [{ messageId: "missingBlankLine" }],
-      output: "/**\n * @returns a\n *\n * @throws b\n */",
+      output: `
+/**
+ * @returns a
+ *
+ * @throws b
+ */
+      `,
     },
     {
-      code: "/**\n * @param a\n *\n */",
+      code: `
+/**
+ * @param a
+ *
+ */
+      `,
       errors: [{ messageId: "unexpectedBlankLine" }],
-      output: "/**\n * @param a\n */",
+      output: `
+/**
+ * @param a
+ */
+      `,
     },
     {
-      code: "/**\n *\n * @param a\n */",
+      code: `
+/**
+ *
+ * @param a
+ */
+      `,
       errors: [{ messageId: "unexpectedBlankLine" }],
-      output: "/**\n * @param a\n */",
+      output: `
+/**
+ * @param a
+ */
+      `,
     },
   ],
 });

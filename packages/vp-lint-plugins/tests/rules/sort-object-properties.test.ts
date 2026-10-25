@@ -4,47 +4,156 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("sort-object-properties", sortObjectProperties, {
   valid: [
-    "const value = {\n  a: 1,\n  b: 2,\n};",
+    `
+const value = {
+  a: 1,
+  b: 2,
+};
+    `,
     "const value = { a: 1 };",
     "const value = { ...spread, b: 1, a: 2 };",
     "const value = { [key]: 1, a: 2 };",
     "const value = { b: 1, b: 2 };",
     "const { a, b } = value;",
     "const { a, ...rest } = value;",
-    "const value = {\n  // カテゴリー 1\n\n  a: 1,\n  zebra: 2,\n\n  // カテゴリー 2\n\n  c: 3,\n  delta: 4,\n};",
-    "const value = {\n  // カテゴリー\n\n  a: 2,\n  // zebra です。\n  zebra: 1,\n};",
+    `
+const value = {
+  // カテゴリー 1
+
+  a: 1,
+  zebra: 2,
+
+  // カテゴリー 2
+
+  c: 3,
+  delta: 4,
+};
+    `,
+    `
+const value = {
+  // カテゴリー
+
+  a: 2,
+  // zebra です。
+  zebra: 1,
+};
+    `,
   ],
   invalid: [
     {
-      code: "const value = {\n  // カテゴリー 1\n\n  zebra: 1,\n  a: 2,\n\n  // カテゴリー 2\n\n  delta: 3,\n  c: 4,\n};",
+      code: `
+const value = {
+  // カテゴリー 1
+
+  zebra: 1,
+  a: 2,
+
+  // カテゴリー 2
+
+  delta: 3,
+  c: 4,
+};
+      `,
       errors: [{ messageId: "sort" }],
-      output:
-        "const value = {\n  // カテゴリー 1\n\n  a: 2,\n  zebra: 1,\n\n  // カテゴリー 2\n\n  c: 4,\n  delta: 3,\n};",
+      output: `
+const value = {
+  // カテゴリー 1
+
+  a: 2,
+  zebra: 1,
+
+  // カテゴリー 2
+
+  c: 4,
+  delta: 3,
+};
+      `,
     },
     {
-      code: "const value = {\n  // カテゴリー\n\n  // zebra です。\n  zebra: 1,\n  a: 2,\n};",
+      code: `
+const value = {
+  // カテゴリー
+
+  // zebra です。
+  zebra: 1,
+  a: 2,
+};
+      `,
       errors: [{ messageId: "sort" }],
-      output: "const value = {\n  // カテゴリー\n\n  a: 2,\n  // zebra です。\n  zebra: 1,\n};",
+      output: `
+const value = {
+  // カテゴリー
+
+  a: 2,
+  // zebra です。
+  zebra: 1,
+};
+      `,
     },
     {
-      code: "const value = { b: 1, a: 2 };",
+      code: `
+const value = { b: 1, a: 2 };
+      `,
       errors: [{ messageId: "sort" }],
-      output: "const value = {\na: 2,\nb: 1,\n};",
+      output: `
+const value = {
+a: 2,
+b: 1,
+};
+      `,
     },
     {
-      code: "const value = {\n  b: 1,\n  a: 2,\n};",
+      code: `
+const value = {
+  b: 1,
+  a: 2,
+};
+      `,
       errors: [{ messageId: "sort" }],
-      output: "const value = {\n  a: 2,\n  b: 1,\n};",
+      output: `
+const value = {
+  a: 2,
+  b: 1,
+};
+      `,
     },
     {
-      code: "const value = {\n  b: 1,\n  a: 2,\n\n  d: 3,\n  c: 4,\n};",
+      code: `
+const value = {
+  b: 1,
+  a: 2,
+
+  d: 3,
+  c: 4,
+};
+      `,
       errors: [{ messageId: "sort" }],
-      output: "const value = {\n  a: 2,\n  b: 1,\n\n  c: 4,\n  d: 3,\n};",
+      output: `
+const value = {
+  a: 2,
+  b: 1,
+
+  c: 4,
+  d: 3,
+};
+      `,
     },
     {
-      code: "const value = {\n  // b です。\n  b: 1,\n  a: 2,\n};",
+      code: `
+const value = {
+  // b です。
+  b: 1,
+  a: 2,
+};
+      `,
       errors: [{ messageId: "sort" }],
-      output: "const value = {\n  a: 2,\n  // b です。\n  b: 1,\n};",
+      output: `
+const value = {
+  a: 2,
+  // b です。
+  b: 1,
+};
+      `,
     },
     {
       code: "const { b, a } = value;",

@@ -4,24 +4,43 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("spaced-comment", spacedComment, {
   valid: [
-    "// comment\nconst a = 1;",
-    "//\nconst a = 1;",
-    "//\tcomment\nconst a = 1;",
+    `
+// comment
+const a = 1;
+    `,
+    `
+//
+const a = 1;
+    `,
+    `
+//	comment
+const a = 1;
+    `,
     '/// <reference types="node" />',
     "//#region",
     "//#endregion",
     "//@ts-check",
     "//----",
     "/* comment */",
-    "/**\n * comment\n */",
+    `
+/**
+ * comment
+ */
+    `,
     "/*! license */",
     "/* */",
   ],
   invalid: [
     {
-      code: "//comment\nconst a = 1;",
+      code: `
+//comment
+const a = 1;
+      `,
       errors: [{ messageId: "missingLeadingSpace" }],
-      output: "// comment\nconst a = 1;",
+      output: `
+// comment
+const a = 1;
+      `,
     },
     {
       code: "/*comment*/",
@@ -44,9 +63,15 @@ ruleTester.run("spaced-comment", spacedComment, {
       output: "/* comment */",
     },
     {
-      code: "/*comment\n * more */",
+      code: `
+/*comment
+ * more */
+      `,
       errors: [{ messageId: "missingLeadingSpace" }],
-      output: "/* comment\n * more */",
+      output: `
+/* comment
+ * more */
+      `,
     },
     {
       code: "//TODO: あとで直します。",

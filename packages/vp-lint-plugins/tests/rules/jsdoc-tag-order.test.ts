@@ -4,33 +4,99 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("jsdoc-tag-order", jsdocTagOrder, {
   valid: [
-    "/**\n * @param a\n * @returns b\n */",
-    "/**\n * @template T\n * @param a\n */",
-    "/**\n * @param a\n * @default 1\n * @returns b\n * @throws c\n * @note d\n * @deprecated e\n * @see f\n */",
-    "/**\n * @param a\n * @param b\n */",
-    "/**\n * @param a\n * @custom b\n */",
-    "/**\n * 説明です。\n */",
-    "/**\n * @example\n * @returns a\n * @param b\n */",
+    `
+/**
+ * @param a
+ * @returns b
+ */
+    `,
+    `
+/**
+ * @template T
+ * @param a
+ */
+    `,
+    `
+/**
+ * @param a
+ * @default 1
+ * @returns b
+ * @throws c
+ * @note d
+ * @deprecated e
+ * @see f
+ */
+    `,
+    `
+/**
+ * @param a
+ * @param b
+ */
+    `,
+    `
+/**
+ * @param a
+ * @custom b
+ */
+    `,
+    `
+/**
+ * 説明です。
+ */
+    `,
+    `
+/**
+ * @example
+ * @returns a
+ * @param b
+ */
+    `,
   ],
   invalid: [
     {
-      code: "/**\n * @returns b\n * @param a\n */",
+      code: `
+/**
+ * @returns b
+ * @param a
+ */
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "/**\n * @see f\n * @deprecated e\n */",
+      code: `
+/**
+ * @see f
+ * @deprecated e
+ */
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "/**\n * @default 1\n * @param a\n */",
+      code: `
+/**
+ * @default 1
+ * @param a
+ */
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "/**\n * @custom b\n * @param a\n */",
+      code: `
+/**
+ * @custom b
+ * @param a
+ */
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "/**\n * @see f\n * @deprecated e\n * @param a\n */",
+      code: `
+/**
+ * @see f
+ * @deprecated e
+ * @param a
+ */
+      `,
       errors: [{ messageId: "order" }],
     },
   ],

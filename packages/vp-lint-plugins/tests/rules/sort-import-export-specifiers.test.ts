@@ -35,9 +35,19 @@ ruleTester.run("sort-import-export-specifiers", sortImportExportSpecifiers, {
       output: 'import { a, default as z } from "module";',
     },
     {
-      code: 'import {\n  b,\n  a,\n} from "module";',
+      code: `
+import {
+  b,
+  a,
+} from "module";
+      `,
       errors: [{ messageId: "sort" }],
-      output: 'import {\n  a,\n  b,\n} from "module";',
+      output: `
+import {
+  a,
+  b,
+} from "module";
+      `,
     },
     {
       code: "export { b, a };",

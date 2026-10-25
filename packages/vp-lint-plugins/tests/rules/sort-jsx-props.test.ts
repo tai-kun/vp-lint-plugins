@@ -45,9 +45,23 @@ ruleTester.run("sort-jsx-props", sortJsxProps, {
       filename: "component.tsx",
     },
     {
-      code: 'const element = (\n  <div\n    b="1"\n    a="2"\n  />\n);',
+      code: `
+const element = (
+  <div
+    b="1"
+    a="2"
+  />
+);
+      `,
       errors: [{ messageId: "sort" }],
-      output: 'const element = (\n  <div\n    a="2"\n    b="1"\n  />\n);',
+      output: `
+const element = (
+  <div
+    a="2"
+    b="1"
+  />
+);
+      `,
       filename: "component.tsx",
     },
   ],

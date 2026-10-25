@@ -4,34 +4,90 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("overload-signatures-adjacent", overloadSignaturesAdjacent, {
   valid: [
-    "function f(a: string): void;\nfunction f(a: number): void;\nfunction f(a: string | number): void {}",
-    "function f(a: string): void;\nfunction f(a: string): void {}\n\nfunction g() {}",
-    "function f(a: string): void;\nfunction f(a: string): void {}",
-    "function f(a: string): void;\n// comment\nfunction f(a: string): void {}",
-    "class A {\n  f(a: string): void;\n  f(a: number): void;\n  f(a: string | number): void {}\n}",
+    `
+function f(a: string): void;
+function f(a: number): void;
+function f(a: string | number): void {}
+    `,
+    `
+function f(a: string): void;
+function f(a: string): void {}
+
+function g() {}
+    `,
+    `
+function f(a: string): void;
+function f(a: string): void {}
+    `,
+    `
+function f(a: string): void;
+// comment
+function f(a: string): void {}
+    `,
+    `
+class A {
+  f(a: string): void;
+  f(a: number): void;
+  f(a: string | number): void {}
+}
+    `,
   ],
   invalid: [
     {
-      code: "function f(a: string): void;\n\nfunction f(a: number): void;\nfunction f(a: string | number): void {}",
+      code: `
+function f(a: string): void;
+
+function f(a: number): void;
+function f(a: string | number): void {}
+      `,
       errors: [{ messageId: "adjacent" }],
-      output:
-        "function f(a: string): void;\nfunction f(a: number): void;\nfunction f(a: string | number): void {}",
+      output: `
+function f(a: string): void;
+function f(a: number): void;
+function f(a: string | number): void {}
+      `,
     },
     {
-      code: "function f(a: string): void;\n\nfunction f(a: string): void {}",
+      code: `
+function f(a: string): void;
+
+function f(a: string): void {}
+      `,
       errors: [{ messageId: "adjacent" }],
-      output: "function f(a: string): void;\nfunction f(a: string): void {}",
+      output: `
+function f(a: string): void;
+function f(a: string): void {}
+      `,
     },
     {
-      code: "class A {\n  f(a: string): void;\n\n  f(a: number): void;\n  f(a: string | number): void {}\n}",
+      code: `
+class A {
+  f(a: string): void;
+
+  f(a: number): void;
+  f(a: string | number): void {}
+}
+      `,
       errors: [{ messageId: "adjacent" }],
-      output:
-        "class A {\n  f(a: string): void;\n  f(a: number): void;\n  f(a: string | number): void {}\n}",
+      output: `
+class A {
+  f(a: string): void;
+  f(a: number): void;
+  f(a: string | number): void {}
+}
+      `,
     },
     {
-      code: "export function f(a: string): void;\n\nexport function f(a: string): void {}",
+      code: `
+export function f(a: string): void;
+
+export function f(a: string): void {}
+      `,
       errors: [{ messageId: "adjacent" }],
-      output: "export function f(a: string): void;\nexport function f(a: string): void {}",
+      output: `
+export function f(a: string): void;
+export function f(a: string): void {}
+      `,
     },
   ],
 });

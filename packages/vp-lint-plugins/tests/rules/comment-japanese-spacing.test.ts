@@ -12,10 +12,26 @@ ruleTester.run("comment-japanese-spacing", commentJapaneseSpacing, {
     "// これは（テスト）です。",
     "// これは.test",
     "// https://example.com を参照してください。",
-    "// ```\n// const value = 1;\n// ```",
-    "// eslint-disable-next-line no-console\nconsole.log(1);",
-    "/**\n * @param value 値\n */",
-    "/**\n * @example\n * const 日本 = 1;\n */",
+    `
+// \`\`\`
+// const value = 1;
+// \`\`\`
+    `,
+    `
+// eslint-disable-next-line no-console
+console.log(1);
+    `,
+    `
+/**
+ * @param value 値
+ */
+    `,
+    `
+/**
+ * @example
+ * const 日本 = 1;
+ */
+    `,
   ],
   invalid: [
     {
@@ -54,9 +70,17 @@ ruleTester.run("comment-japanese-spacing", commentJapaneseSpacing, {
       output: "// 詳細は https://example.com です",
     },
     {
-      code: "/**\n * これはVite+です\n */",
+      code: `
+/**
+ * これはVite+です
+ */
+      `,
       errors: [{ messageId: "spacing" }, { messageId: "spacing" }],
-      output: "/**\n * これは Vite+ です\n */",
+      output: `
+/**
+ * これは Vite+ です
+ */
+      `,
     },
     {
       code: "/* これはVite+です */",

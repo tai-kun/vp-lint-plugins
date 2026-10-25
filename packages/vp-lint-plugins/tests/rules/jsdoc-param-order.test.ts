@@ -4,31 +4,104 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("jsdoc-param-order", jsdocParamOrder, {
   valid: [
-    "/**\n * @param a\n * @param b\n */\nfunction f(a: string, b: number): void {}",
-    "/**\n * @param a\n * @param b\n */\nexport function f(a: string, b: number): void {}",
-    "/**\n * @param {string} [a]\n * @param {number} [b]\n */\nfunction f(a?: string, b?: number): void {}",
-    "/**\n * @param {{ a: string }} a\n */\nfunction f(a: { a: string }): void {}",
-    "/**\n * @param b\n * @param a\n */\nfunction f({ a, b }: { a: string; b: string }): void {}",
-    "/**\n * @param a\n */\nfunction f(a: string, b: number): void {}",
-    "/**\n * 説明です。\n */\nfunction f(a: string): void {}",
+    `
+/**
+ * @param a
+ * @param b
+ */
+function f(a: string, b: number): void {}
+    `,
+    `
+/**
+ * @param a
+ * @param b
+ */
+export function f(a: string, b: number): void {}
+    `,
+    `
+/**
+ * @param {string} [a]
+ * @param {number} [b]
+ */
+function f(a?: string, b?: number): void {}
+    `,
+    `
+/**
+ * @param {{ a: string }} a
+ */
+function f(a: { a: string }): void {}
+    `,
+    `
+/**
+ * @param b
+ * @param a
+ */
+function f({ a, b }: { a: string; b: string }): void {}
+    `,
+    `
+/**
+ * @param a
+ */
+function f(a: string, b: number): void {}
+    `,
+    `
+/**
+ * 説明です。
+ */
+function f(a: string): void {}
+    `,
     "function f(a: string): void {}",
-    "class A {\n  /**\n   * @param a\n   * @param b\n   */\n  f(a: string, b: number): void {}\n}",
+    `
+class A {
+  /**
+   * @param a
+   * @param b
+   */
+  f(a: string, b: number): void {}
+}
+    `,
   ],
   invalid: [
     {
-      code: "/**\n * @param b\n * @param a\n */\nfunction f(a: string, b: number): void {}",
+      code: `
+/**
+ * @param b
+ * @param a
+ */
+function f(a: string, b: number): void {}
+      `,
       errors: [{ messageId: "paramOrder" }],
     },
     {
-      code: "class A {\n  /**\n   * @param b\n   * @param a\n   */\n  f(a: string, b: number): void {}\n}",
+      code: `
+class A {
+  /**
+   * @param b
+   * @param a
+   */
+  f(a: string, b: number): void {}
+}
+      `,
       errors: [{ messageId: "paramOrder" }],
     },
     {
-      code: "/**\n * @param b\n * @param a\n */\nexport function f(a: string, b: number): void {}",
+      code: `
+/**
+ * @param b
+ * @param a
+ */
+export function f(a: string, b: number): void {}
+      `,
       errors: [{ messageId: "paramOrder" }],
     },
     {
-      code: "/**\n * @param {number} b\n * @param {string} a\n */\nfunction f(a: string, b: number): void {}",
+      code: `
+/**
+ * @param {number} b
+ * @param {string} a
+ */
+function f(a: string, b: number): void {}
+      `,
       errors: [{ messageId: "paramOrder" }],
     },
   ],

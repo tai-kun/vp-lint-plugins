@@ -4,26 +4,80 @@ import { createRuleTester } from "../support/rule-tester.js";
 const ruleTester = createRuleTester();
 ruleTester.run("member-ordering", memberOrdering, {
   valid: [
-    "class A {\n  static a = 1;\n\n  static {}\n\n  b = 2;\n\n  constructor() {}\n\n  static c() {}\n\n  d() {}\n}",
-    "class A {\n  a() {}\n\n  b() {}\n}",
-    "class A {\n  get value(): number { return 1; }\n  set value(value: number) {}\n}",
-    "class A {\n  [key: string]: unknown;\n  a = 1;\n}",
+    `
+class A {
+  static a = 1;
+
+  static {}
+
+  b = 2;
+
+  constructor() {}
+
+  static c() {}
+
+  d() {}
+}
+    `,
+    `
+class A {
+  a() {}
+
+  b() {}
+}
+    `,
+    `
+class A {
+  get value(): number { return 1; }
+  set value(value: number) {}
+}
+    `,
+    `
+class A {
+  [key: string]: unknown;
+  a = 1;
+}
+    `,
   ],
   invalid: [
     {
-      code: "class A {\n  constructor() {}\n\n  a = 1;\n}",
+      code: `
+class A {
+  constructor() {}
+
+  a = 1;
+}
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "class A {\n  a = 1;\n\n  static b = 2;\n}",
+      code: `
+class A {
+  a = 1;
+
+  static b = 2;
+}
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "class A {\n  static a() {}\n\n  b = 1;\n}",
+      code: `
+class A {
+  static a() {}
+
+  b = 1;
+}
+      `,
       errors: [{ messageId: "order" }],
     },
     {
-      code: "class A {\n  a() {}\n\n  b = 1;\n}",
+      code: `
+class A {
+  a() {}
+
+  b = 1;
+}
+      `,
       errors: [{ messageId: "order" }],
     },
   ],
