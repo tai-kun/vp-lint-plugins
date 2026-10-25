@@ -19,6 +19,7 @@ export default defineMeta({
     "sort-import-export-specifiers",
     "overload-signatures-adjacent",
     "member-ordering",
+    "no-await-in-expect",
   ],
   title: "Rules",
 });

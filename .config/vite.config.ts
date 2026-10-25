@@ -108,6 +108,7 @@ export default defineConfig({
       "tai-kun/sort-type-members": "error",
       "unicorn/no-zero-fractions": "error",
       "prefer-named-capture-group": "error",
+      "tai-kun/no-await-in-expect": "error",
       "unicorn/number-literal-case": "error",
       "logical-assignment-operators": "error",
       "prefer-exponentiation-operator": "error",

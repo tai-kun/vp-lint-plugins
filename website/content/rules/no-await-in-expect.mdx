@@ -1,0 +1,41 @@
+---
+title: no-await-in-expect
+description: `expect(await ...)` の代わりに `await expect(...).resolves` / `.rejects` を要求します。
+---
+
+- ルール ID: `tai-kun/no-await-in-expect`
+- 自動修正: あり
+
+`expect()` の引数で `await` した値を検証するコードを検出します。`expect(await ...)` では拒否された Promise を `.rejects` で検証できないため、`await expect(...).resolves` または `await expect(...).rejects` に書き換えます。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/no-await-in-expect": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+test("basic", async () => {
+  expect(await run()).toBe(1);
+});
+```
+
+### 修正後 [#valid]
+
+```ts
+test("basic", async () => {
+  await expect(run()).resolves.toBe(1);
+});
+```
+
+## 注意 [#notes]
+
+- 自動修正では `.resolves` を付けて書き換えます。拒否を検証したい場合は、手で `.rejects` に直してください。
+- すでに `.resolves` / `.rejects` が付いているチェーンでは、`await` を外すだけの修正になります。
+- すでに `await` されている式（`await expect(await ...)` など）には、`await` を重ねて追加しません。

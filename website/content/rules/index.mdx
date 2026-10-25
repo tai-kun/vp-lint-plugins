@@ -81,3 +81,9 @@ export default defineConfig({
 | --------------------------------------------------------------------- | ------------------------------------------------ | -------- |
 | [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent) | オーバーロード署名と実装の間の空行を禁止します。 | あり     |
 | [`member-ordering`](/rules/member-ordering)                           | クラスメンバーの順序を統一します。               | なし     |
+
+## テスト [#tests]
+
+| ルール                                            | 内容                                                                                    | 自動修正 |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------- | -------- |
+| [`no-await-in-expect`](/rules/no-await-in-expect) | `expect(await ...)` の代わりに `await expect(...).resolves` / `.rejects` を要求します。 | あり     |

@@ -8,6 +8,7 @@ import jsdocTagLines from "./rules/jsdoc-tag-lines.js";
 import jsdocTagOrder from "./rules/jsdoc-tag-order.js";
 import memberOrdering from "./rules/member-ordering.js";
 import mergeImports from "./rules/merge-imports.js";
+import noAwaitInExpect from "./rules/no-await-in-expect.js";
 import objectPropertiesNewline from "./rules/object-properties-newline.js";
 import overloadSignaturesAdjacent from "./rules/overload-signatures-adjacent.js";
 import sortImportExportSpecifiers from "./rules/sort-import-export-specifiers.js";
@@ -29,6 +30,7 @@ export default definePlugin({
     "member-ordering": memberOrdering,
     "jsdoc-param-order": jsdocParamOrder,
     "sort-type-members": sortTypeMembers,
+    "no-await-in-expect": noAwaitInExpect,
     "sort-object-properties": sortObjectProperties,
     "comment-japanese-spacing": commentJapaneseSpacing,
     "object-properties-newline": objectPropertiesNewline,
