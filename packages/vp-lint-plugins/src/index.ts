@@ -1,9 +1,4 @@
-export { default as blankLineAfterControlBlock } from "./rules/blank-line-after-control-block.js";
-export { default as blankLineAfterDeclaration } from "./rules/blank-line-after-declaration.js";
-export { default as blankLineAfterVariableDeclaration } from "./rules/blank-line-after-variable-declaration.js";
-export { default as blankLineBeforeReturn } from "./rules/blank-line-before-return.js";
-export { default as blankLineBetweenClassMembers } from "./rules/blank-line-between-class-members.js";
-export { default as blankLineBetweenSwitchCases } from "./rules/blank-line-between-switch-cases.js";
+export { default as blankLine } from "./rules/blank-line.js";
 export { default as commentJapaneseSpacing } from "./rules/comment-japanese-spacing.js";
 export { default as commentOneSentencePerLine } from "./rules/comment-one-sentence-per-line.js";
 export { default as jsdocParamOrder } from "./rules/jsdoc-param-order.js";

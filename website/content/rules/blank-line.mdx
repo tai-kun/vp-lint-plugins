@@ -1,0 +1,68 @@
+---
+title: blank-line
+description: 文・クラスメンバー・switch の case の境界に空行を要求します。
+---
+
+- ルール ID: `tai-kun/blank-line`
+- 自動修正: あり
+
+文の境界、クラスメンバー、空でない `switch` の `case` の間に、空行を 1 行入れます。6 つの旧ルール（`blank-line-after-control-block`、`blank-line-after-declaration`、`blank-line-after-variable-declaration`、`blank-line-before-return`、`blank-line-between-class-members`、`blank-line-between-switch-cases`）を 1 つにまとめたもので、各項目はオプションで切り替えられます。1 つの境界には最大で 1 件だけ報告するため、項目同士が矛盾しません。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。オプションはすべて既定で `true` です。
+
+```ts
+"tai-kun/blank-line": ["error", {
+  afterControlBlock: true,
+  afterDeclaration: true,
+  afterVariableDeclaration: true,
+  beforeReturn: true,
+  betweenClassMembers: true,
+  betweenSwitchCases: true,
+  betweenTypeMembers: true,
+}],
+```
+
+| オプション                 | 内容                                                                                     |
+| -------------------------- | ---------------------------------------------------------------------------------------- |
+| `afterControlBlock`        | `if`・`for`・`while`・`switch`・`try` などの後に別の文が続く場合、空行を要求します。     |
+| `afterDeclaration`         | 関数・クラス・`interface`・`type` などの宣言の後に別の文が続く場合、空行を要求します。   |
+| `afterVariableDeclaration` | 変数宣言グループの後に別の文が続く場合、空行を要求します。グループ内の空行は削除します。 |
+| `beforeReturn`             | `return` の直前に別の文がある場合、空行を要求します。                                    |
+| `betweenClassMembers`      | クラスメンバーの間に空行を要求します。                                                   |
+| `betweenSwitchCases`       | 空でない `case` の間に空行を要求します。                                                 |
+| `betweenTypeMembers`       | `interface` や型リテラルのメンバー間にある JSDoc の 1 行上に空行を要求します。           |
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+const ready = getItems();
+ready.sort(compareNames);
+const sorted = [];
+```
+
+### 修正後 [#valid]
+
+```ts
+const ready = getItems();
+ready.sort(compareNames);
+
+const sorted = [];
+```
+
+## 注意 [#notes]
+
+- 宣言した変数を使う式文（例: `ready.sort(compareNames)`）は同じグループとして扱い、間の空行は削除します。
+- 連続する変数宣言同士は同じグループとみなし、間の空行の有無は問いません。
+- オーバーロード署名の後、getter/setter のペアの間、連続する空の `case`（フォールスルー）は対象外です。
+- 行コメント（`//`）や通常のブロックコメント（`/* */`）を挟む場合、前後の空行は任意です。
+- JSDoc 形式のブロックコメント（`/**` で始まる）の 1 行上は空行を要求します。
+- 余分な空行は Oxfmt が 1 行に畳みます。
+
+## 関連ルール [#related-rules]
+
+- [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)
+- [`member-ordering`](/rules/member-ordering)

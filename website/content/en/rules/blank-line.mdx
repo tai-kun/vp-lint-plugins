@@ -1,0 +1,68 @@
+---
+title: blank-line
+description: Require blank lines between statements, class members, and switch cases.
+---
+
+- Rule ID: `tai-kun/blank-line`
+- Auto-fix: Yes
+
+Requires one blank line between statements, class members, and non-empty `switch` cases. This rule consolidates six former rules (`blank-line-after-control-block`, `blank-line-after-declaration`, `blank-line-after-variable-declaration`, `blank-line-before-return`, `blank-line-between-class-members`, and `blank-line-between-switch-cases`), each of which can be toggled with an option. Each boundary produces at most one diagnostic, so the items never contradict each other.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it. All options default to `true`.
+
+```ts
+"tai-kun/blank-line": ["error", {
+  afterControlBlock: true,
+  afterDeclaration: true,
+  afterVariableDeclaration: true,
+  beforeReturn: true,
+  betweenClassMembers: true,
+  betweenSwitchCases: true,
+  betweenTypeMembers: true,
+}],
+```
+
+| Option                     | Description                                                                                                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `afterControlBlock`        | Require a blank line after `if`, `for`, `while`, `switch`, `try`, and similar blocks when another statement follows.             |
+| `afterDeclaration`         | Require a blank line after function, class, `interface`, `type`, and similar declarations when another statement follows.        |
+| `afterVariableDeclaration` | Require a blank line after a variable declaration group when another statement follows, and remove blank lines inside the group. |
+| `beforeReturn`             | Require a blank line before a `return` statement when another statement precedes it.                                             |
+| `betweenClassMembers`      | Require a blank line between class members.                                                                                      |
+| `betweenSwitchCases`       | Require a blank line between non-empty cases.                                                                                    |
+| `betweenTypeMembers`       | Require a blank line above JSDoc comments between `interface` and type literal members.                                          |
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+const ready = getItems();
+ready.sort(compareNames);
+const sorted = [];
+```
+
+### Valid [#valid]
+
+```ts
+const ready = getItems();
+ready.sort(compareNames);
+
+const sorted = [];
+```
+
+## Notes [#notes]
+
+- Expression statements that use the declared variables, such as `ready.sort(compareNames)`, belong to the same group, and blank lines between them are removed.
+- Consecutive variable declarations are treated as one group, with or without blank lines between them.
+- Overload signatures, getter/setter pairs, and empty fallthrough cases are excluded.
+- Blank lines around intervening line comments (`//`) and plain block comments (`/* */`) are optional.
+- A blank line is required above JSDoc-style block comments (starting with `/**`).
+- Extra blank lines are collapsed to one by Oxfmt.
+
+## Related rules [#related-rules]
+
+- [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)
+- [`member-ordering`](/rules/member-ordering)

@@ -1,7 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, Context, SourceCode } from "vite-plus/lint/plugins";
 
-import { getNextStatement, getRemoveBlankLineFix } from "./blank-line.js";
+import { getNextStatement, getRemoveBlankLineFix } from "./blank-line-utils.js";
 
 function getFunction(node: ESTree.Node): ESTree.Function | null {
   if (node.type === "FunctionDeclaration" || node.type === "TSDeclareFunction") {

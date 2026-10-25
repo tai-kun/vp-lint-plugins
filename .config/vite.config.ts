@@ -66,22 +66,12 @@ export default defineConfig({
       "no-else-return": "error",
       "no-lone-blocks": "error",
       "default-case-last": "error",
+      // 文・メンバー・case の境界には空行を 1 行入れます（各項目はオプションで切替）。
+      "tai-kun/blank-line": "error",
       "unicorn/switch-case-braces": ["error", "always"],
-      // return の直前に処理がある場合は空行を 1 行入れます。
-      "tai-kun/blank-line-before-return": "error",
       "unicorn/switch-case-break-position": "error",
-      // 宣言の後に処理が続く場合は空行を 1 行入れます。
-      "tai-kun/blank-line-after-declaration": "error",
       // オーバーロード署名と実装は隣接させます。
       "tai-kun/overload-signatures-adjacent": "error",
-      // 制御ブロックの後に処理が続く場合は空行を 1 行入れます。
-      "tai-kun/blank-line-after-control-block": "error",
-      // switch の case の間にも空行を 1 行入れます。
-      "tai-kun/blank-line-between-switch-cases": "error",
-      // クラスメンバーの間にも空行を 1 行入れます。
-      "tai-kun/blank-line-between-class-members": "error",
-      // 連続する変数宣言の後に別の文が続く場合は空行を 1 行入れます。
-      "tai-kun/blank-line-after-variable-declaration": "error",
 
       // 式と文の書き方を統一します。
 
@@ -107,40 +97,26 @@ export default defineConfig({
       "no-implicit-coercion": "error",
       "prefer-object-spread": "error",
       "prefer-arrow-callback": "error",
-      // 正規表現には Unicode フラグを付けます。
       "require-unicode-regexp": "error",
-      // JSX の props は「一般 → on* → aria-* → data-*」の順にします。
       "tai-kun/sort-jsx-props": "error",
-      // コメントの開始記号の直後と終了記号の直前に空白を入れます。
       "tai-kun/spaced-comment": "error",
       "no-useless-computed-key": "error",
-      // JSDoc のタググループの空行を揃えます。
       "tai-kun/jsdoc-tag-lines": "error",
-      // JSDoc のタグの順序を揃えます。
       "tai-kun/jsdoc-tag-order": "error",
-      // クラスメンバーの順序を統一します。
       "tai-kun/member-ordering": "error",
-      // @param タグを引数の順序に揃えます。
       "tai-kun/jsdoc-param-order": "error",
-      // 型リテラルのメンバーは名前の長さ→名前順に並べます。
       "tai-kun/sort-type-members": "error",
       "unicorn/no-zero-fractions": "error",
-      // 正規表現のキャプチャーグループには名前を付けます。
       "prefer-named-capture-group": "error",
       "unicorn/number-literal-case": "error",
       "logical-assignment-operators": "error",
       "prefer-exponentiation-operator": "error",
       "tai-kun/sort-object-properties": "error",
-      // 日本語と半角文字の間には半角スペースを 1 つ入れます。
       "tai-kun/comment-japanese-spacing": "error",
       "unicorn/numeric-separators-style": "error",
-      // 2 プロパティー以上のオブジェクトは複数行にし、可能なら名前の長さ→名前順に並べます。
       "tai-kun/object-properties-newline": "error",
-      // コメントは 1 行 1 文にし、文末の句読点も要求します。
       "tai-kun/comment-one-sentence-per-line": ["error", { requireEndPunctuation: true }],
-      // import / export の specifier は「型 → 変数など → default」の順にします。
       "tai-kun/sort-import-export-specifiers": "error",
-      // 2 つ以上のメンバーを持つ型リテラルは複数行にします。
       "tai-kun/type-literal-properties-newline": "error",
       "unicorn/consistent-template-literal-escape": "error",
 
@@ -173,6 +149,9 @@ export default defineConfig({
         },
       ],
       "typescript/dot-notation": "error",
+      "typescript/return-await": "error",
+      "typescript/no-deprecated": "error",
+      "typescript/require-await": "error",
       "typescript/no-mixed-enums": "error",
       "typescript/prefer-readonly": "error",
       "typescript/unified-signatures": "error",
@@ -193,15 +172,11 @@ export default defineConfig({
           objectLiteralTypeAssertions: "allow",
         },
       ],
-      "typescript/consistent-type-definitions": ["error", "interface"],
       "typescript/related-getter-setter-pairs": "error",
       "typescript/adjacent-overload-signatures": "error",
       "typescript/consistent-generic-constructors": ["error", "constructor"],
       "typescript/consistent-indexed-object-style": ["error", "record"],
 
-      "typescript/return-await": "error",
-      "typescript/no-deprecated": "error",
-      "typescript/require-await": "error",
       // 型安全性を高めるルールです。
 
       "typescript/ban-ts-comment": "error",
@@ -212,7 +187,6 @@ export default defineConfig({
       "typescript/no-non-null-assertion": "error",
       "typescript/prefer-ts-expect-error": "error",
       "typescript/restrict-plus-operands": "error",
-      // 実行時検証後の型アサーションを許可します。
       "typescript/no-unsafe-type-assertion": "off",
       "typescript/prefer-nullish-coalescing": "error",
       "typescript/strict-boolean-expressions": "error",
@@ -227,7 +201,6 @@ export default defineConfig({
       "unicorn/prefer-at": "error",
       "unicorn/escape-case": "error",
       "prefer-object-has-own": "error",
-      // toSorted は target es2020 では利用できないため。
       "unicorn/no-array-sort": "off",
       "unicorn/no-hex-escape": "error",
       "unicorn/throw-new-error": "error",

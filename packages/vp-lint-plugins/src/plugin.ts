@@ -1,11 +1,6 @@
 import { definePlugin } from "vite-plus/lint/plugins";
 
-import blankLineAfterControlBlock from "./rules/blank-line-after-control-block.js";
-import blankLineAfterDeclaration from "./rules/blank-line-after-declaration.js";
-import blankLineAfterVariableDeclaration from "./rules/blank-line-after-variable-declaration.js";
-import blankLineBeforeReturn from "./rules/blank-line-before-return.js";
-import blankLineBetweenClassMembers from "./rules/blank-line-between-class-members.js";
-import blankLineBetweenSwitchCases from "./rules/blank-line-between-switch-cases.js";
+import blankLine from "./rules/blank-line.js";
 import commentJapaneseSpacing from "./rules/comment-japanese-spacing.js";
 import commentOneSentencePerLine from "./rules/comment-one-sentence-per-line.js";
 import jsdocParamOrder from "./rules/jsdoc-param-order.js";
@@ -25,6 +20,7 @@ import typeLiteralPropertiesNewline from "./rules/type-literal-properties-newlin
 export default definePlugin({
   meta: { name: "tai-kun" },
   rules: {
+    "blank-line": blankLine,
     "merge-imports": mergeImports,
     "sort-jsx-props": sortJsxProps,
     "spaced-comment": spacedComment,
@@ -34,17 +30,11 @@ export default definePlugin({
     "jsdoc-param-order": jsdocParamOrder,
     "sort-type-members": sortTypeMembers,
     "sort-object-properties": sortObjectProperties,
-    "blank-line-before-return": blankLineBeforeReturn,
     "comment-japanese-spacing": commentJapaneseSpacing,
     "object-properties-newline": objectPropertiesNewline,
-    "blank-line-after-declaration": blankLineAfterDeclaration,
     "overload-signatures-adjacent": overloadSignaturesAdjacent,
     "comment-one-sentence-per-line": commentOneSentencePerLine,
     "sort-import-export-specifiers": sortImportExportSpecifiers,
-    "blank-line-after-control-block": blankLineAfterControlBlock,
-    "blank-line-between-switch-cases": blankLineBetweenSwitchCases,
     "type-literal-properties-newline": typeLiteralPropertiesNewline,
-    "blank-line-between-class-members": blankLineBetweenClassMembers,
-    "blank-line-after-variable-declaration": blankLineAfterVariableDeclaration,
   },
 });
