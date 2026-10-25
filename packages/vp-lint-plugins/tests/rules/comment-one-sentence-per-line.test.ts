@@ -82,6 +82,14 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
       code: "/**\n * これは文です。\n */",
       options: [{ requireEndPunctuation: true }],
     },
+    {
+      code: "// [API Reference](https://example.com/)",
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/**\n * [API Reference](https://example.com/)\n */",
+      options: [{ requireEndPunctuation: true }],
+    },
   ],
   invalid: [
     {

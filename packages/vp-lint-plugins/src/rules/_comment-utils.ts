@@ -9,7 +9,7 @@ interface CommentLine {
 }
 
 // ラベル行とは別に、閉じ括弧付きのコロン終わりも文末とします。
-const SENTENCE_END = /[。．.!?！？:：]$/u;
+const SENTENCE_END = /[。．.!?！？:：)…]$/u;
 const TRAILING_CLOSERS = /[」』】）》）〕〉］｝"'”’]+$/u;
 const DIRECTIVE_PREFIXES = [
   "#!",
