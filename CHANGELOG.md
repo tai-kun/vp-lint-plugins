@@ -1,5 +1,21 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.6
+
+### 新機能
+
+- object-properties-newline を JSON にも適用可能にする ([c77ab3c](https://github.com/tai-kun/vp-lint-plugins/commit/c77ab3cd7f5c528111ec6f20027e1105d09c8b64))
+
+### バグ修正
+
+- 文末として有効な文字を追加 ([6bda0ea](https://github.com/tai-kun/vp-lint-plugins/commit/6bda0ea763435529f4e7ae5706baeafebead596e))
+
+### リファクタリング
+
+- 内部利用のファイル名を変更 ([390b7d7](https://github.com/tai-kun/vp-lint-plugins/commit/390b7d7c6cbf261268b7d15dc3b51c24a3a57d7f))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.5...@tai-kun/vp-lint-plugins@0.0.6
+
 ## @tai-kun/vp-lint-plugins@0.0.5
 
 ### 新機能
