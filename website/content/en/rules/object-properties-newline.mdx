@@ -1,12 +1,12 @@
 ---
 title: object-properties-newline
-description: Enforce multiline object literals when they have two or more properties.
+description: Enforce multiline objects when they have two or more properties.
 ---
 
 - Rule ID: `tai-kun/object-properties-newline`
 - Auto-fix: Yes
 
-Inserts a line break after `{` when an object literal has two or more properties and the first property starts on the same line as the brace.
+Inserts a line break after `{` when an object literal or JSON object has two or more properties and the first property starts on the same line as the brace.
 
 ## Configuration [#configuration]
 
@@ -36,8 +36,9 @@ const value = {
 ## Notes [#notes]
 
 - Sortable objects are skipped because `sort-object-properties` also makes them multiline.
-- Use it together with Oxfmt's `objectWrap: "preserve"`.
+- Use it together with Oxfmt's `objectWrap: "preserve"`. JSON is formatted with the same setting.
 - Objects with one property are ignored.
+- JSON (`JSONObjectExpression`) is also covered. Each nested object is checked.
 
 ## Related rules [#related-rules]
 

@@ -1,12 +1,12 @@
 ---
 title: object-properties-newline
-description: 2 つ以上のプロパティーを持つオブジェクトリテラルを複数行にします。
+description: 2 つ以上のプロパティーを持つオブジェクトリテラルと JSON オブジェクトを複数行にします。
 ---
 
 - ルール ID: `tai-kun/object-properties-newline`
 - 自動修正: あり
 
-プロパティーが 2 つ以上あるオブジェクトリテラルで、最初のプロパティーが `{` と同じ行にある場合、`{` の直後に改行を挿入します。
+プロパティーが 2 つ以上あるオブジェクトリテラルと JSON オブジェクトで、最初のプロパティーが `{` と同じ行にある場合、`{` の直後に改行を挿入します。
 
 ## 設定 [#configuration]
 
@@ -36,8 +36,9 @@ const value = {
 ## 注意 [#notes]
 
 - 並び替え可能なオブジェクトは `sort-object-properties` が複数行化も担当するため、このルールでは報告しません。
-- Oxfmt の `objectWrap: "preserve"` と組み合わせて使用します。
+- Oxfmt の `objectWrap: "preserve"` と組み合わせて使用します。JSON も同じ設定で整形されます。
 - 1 プロパティーのオブジェクトは対象外です。
+- JSON (`JSONObjectExpression`) も対象です。ネストされたオブジェクトごとに判定します。
 
 ## 関連ルール [#related-rules]
 
