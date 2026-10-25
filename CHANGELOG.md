@@ -1,5 +1,26 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.7
+
+### 新機能
+
+- no-await-in-expect ルールを追加 ([d273de3](https://github.com/tai-kun/vp-lint-plugins/commit/d273de3182c12c33b2ac4622557083bf15b9dec9))
+
+### バグ修正
+
+- /_#**PURE**_/ をコメントルールの対象外にする ([53d5008](https://github.com/tai-kun/vp-lint-plugins/commit/53d5008c78e983fe36ca35a743036ecd885d90b3))
+- 文末の定義を変更 ([2432d08](https://github.com/tai-kun/vp-lint-plugins/commit/2432d080c78baef89944f58cc0b593ac6011a108))
+
+### ドキュメント
+
+- フロントマターを修正 ([d630729](https://github.com/tai-kun/vp-lint-plugins/commit/d6307297e20ce592efb7225a5b9951810fcba438))
+
+### テスト
+
+- 見た目を改善 ([e9b2375](https://github.com/tai-kun/vp-lint-plugins/commit/e9b237502ef2b34de998109131eae287fcf837ba))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.6...@tai-kun/vp-lint-plugins@0.0.7
+
 ## @tai-kun/vp-lint-plugins@0.0.6
 
 ### 新機能
