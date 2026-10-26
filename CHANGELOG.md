@@ -1,5 +1,17 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.9
+
+### 新機能
+
+- member-orderingにpublic/protected/private順序を追加しexplicit-member-accessibilityを新設 ([7173601](https://github.com/tai-kun/vp-lint-plugins/commit/7173601368fcc29b0a81991ca1ee83403257ae57))
+
+### ドキュメント
+
+- フロントマターを修正 ([07896ef](https://github.com/tai-kun/vp-lint-plugins/commit/07896efd7370312ee5d51ac166e1ab79263353f7))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.8...@tai-kun/vp-lint-plugins@0.0.9
+
 ## @tai-kun/vp-lint-plugins@0.0.8
 
 ### バグ修正
