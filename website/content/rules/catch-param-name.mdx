@@ -1,0 +1,54 @@
+---
+title: catch-param-name
+description: "`catch` の引数名に `e` / `err` / `error` / `reason` を禁止します。"
+---
+
+- ルール ID: `tai-kun/catch-param-name`
+- 自動修正: なし（`ex` / `exception` へのリネームをサジェスト）
+
+`catch` の引数名に `e` / `err` / `error` / `reason` を使うコードを検出します。`error` は `Error` オブジェクトと紛らわしく、`reason` は拒否理由との区別が付きにくいため、例外であることを示す `ex`（推奨）や `exception` を使ってください。大文字小文字は区別しません（`Error` も対象です）。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/catch-param-name": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+try {
+  run();
+} catch (error) {
+  handle(error);
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+try {
+  run();
+} catch (ex) {
+  handle(ex);
+}
+```
+
+```ts
+try {
+  run();
+} catch (exception) {
+  handle(exception);
+}
+```
+
+## 注意 [#notes]
+
+- 報告のみで、自動修正は行いません。エディターのクイックフィックスから `ex`（推奨）または `exception` へのリネームを選べます。
+- サジェストは引数とその参照をまとめてリネームします。`catch (error: unknown)` のように型注釈がある場合、注釈は残して名前だけを置き換えます。
+- 引数がない `catch {}` や分割代入の引数（`catch ({ message })` など）は対象外です。
+- `error` / `reason` 以外の名前（`cause` や `myError` など）は報告しません。

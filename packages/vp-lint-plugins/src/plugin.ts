@@ -1,6 +1,7 @@
 import { definePlugin } from "vite-plus/lint/plugins";
 
 import blankLine from "./rules/blank-line.js";
+import catchParamName from "./rules/catch-param-name.js";
 import commentJapaneseSpacing from "./rules/comment-japanese-spacing.js";
 import commentOneSentencePerLine from "./rules/comment-one-sentence-per-line.js";
 import explicitMemberAccessibility from "./rules/explicit-member-accessibility.js";
@@ -29,6 +30,7 @@ export default definePlugin({
     "jsdoc-tag-lines": jsdocTagLines,
     "jsdoc-tag-order": jsdocTagOrder,
     "member-ordering": memberOrdering,
+    "catch-param-name": catchParamName,
     "jsdoc-param-order": jsdocParamOrder,
     "sort-type-members": sortTypeMembers,
     "no-await-in-expect": noAwaitInExpect,

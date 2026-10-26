@@ -1,4 +1,5 @@
 export { default as blankLine } from "./rules/blank-line.js";
+export { default as catchParamName } from "./rules/catch-param-name.js";
 export { default as commentJapaneseSpacing } from "./rules/comment-japanese-spacing.js";
 export { default as commentOneSentencePerLine } from "./rules/comment-one-sentence-per-line.js";
 export { default as explicitMemberAccessibility } from "./rules/explicit-member-accessibility.js";
