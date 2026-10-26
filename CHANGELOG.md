@@ -1,5 +1,13 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.10
+
+### 新機能
+
+- catchの引数名にerrorやreasonの使用を禁止するcatch-param-nameを追加 ([b42a59b](https://github.com/tai-kun/vp-lint-plugins/commit/b42a59bafeb776da736ecd89e30774efbd4ef15b))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.9...@tai-kun/vp-lint-plugins@0.0.10
+
 ## @tai-kun/vp-lint-plugins@0.0.9
 
 ### 新機能
