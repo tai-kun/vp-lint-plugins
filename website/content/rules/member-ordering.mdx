@@ -6,7 +6,7 @@ description: クラスメンバーの順序を統一します。
 - ルール ID: `tai-kun/member-ordering`
 - 自動修正: なし
 
-クラスメンバーを `static` フィールド → `static` ブロック → インスタンスフィールド → constructor → `static` メソッド → インスタンスメソッドの順に要求します。
+クラスメンバーを `public static` フィールド → `protected static` フィールド → `private static` フィールド → `static` ブロック → `public` インスタンスフィールド → `protected` インスタンスフィールド → `private` インスタンスフィールド → constructor → `public static` メソッド → `protected static` メソッド → `private static` メソッド → `public` インスタンスメソッド → `protected` インスタンスメソッド → `private` インスタンスメソッドの順に要求します。
 
 ## 設定 [#configuration]
 
@@ -40,7 +40,15 @@ class Service {
 class Service {
   static instances = 0;
 
+  protected static cache = new Map();
+
+  private static registry = new Set();
+
   value = 1;
+
+  protected options = {};
+
+  #internal = 0;
 
   constructor() {}
 
@@ -48,7 +56,13 @@ class Service {
     return new Service();
   }
 
+  protected static load() {}
+
   run() {}
+
+  protected stop() {}
+
+  #cleanup() {}
 }
 ```
 
@@ -56,7 +70,9 @@ class Service {
 
 - 報告のみで、自動修正は行いません。
 - index signature は順序の判定に含めません。
-- アクセス修飾子（public/protected/private）は順序の判定に含めません。
+- 各フィールド・メソッド内では `public` → `protected` → `private` の順に要求します。修飾子なしは `public` として扱います。
+- `#` によるプライベートフィールド・メソッドは `private` として扱います。
+- constructor はアクセス修飾子にかかわらず1つのグループとして扱います。
 - getter/setter はメソッドとして扱います。
 
 ## 関連ルール [#related-rules]

@@ -1,0 +1,61 @@
+---
+title: explicit-member-accessibility
+description: `#` プライベート以外のクラスメンバーにアクセス修飾子を要求します。
+---
+
+- ルール ID: `tai-kun/explicit-member-accessibility`
+- 自動修正: なし
+
+`#` によるプライベート以外のクラスメンバーに、`public` / `protected` / `private` のいずれかを要求します。`constructor` を含むすべてのフィールド・メソッド・アクセサーが対象です。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/explicit-member-accessibility": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+class Service {
+  value = 1;
+
+  constructor() {}
+
+  run() {}
+}
+```
+
+### 修正後 [#valid]
+
+```ts
+class Service {
+  public value = 1;
+
+  #internal = 0;
+
+  public constructor() {}
+
+  public run() {}
+
+  protected stop() {}
+
+  private reset() {}
+}
+```
+
+## 注意 [#notes]
+
+- 報告のみで、自動修正は行いません。
+- `#` によるプライベートフィールド・メソッドは対象外です（修飾子を付けられません）。
+- `static` ブロックと index signature は対象外です。
+- 修飾子なしのコンストラクター引数は対象外です。`readonly` のみのパラメータープロパティーは違反になります（`public readonly` のように書いてください）。
+- getter/setter と `accessor` も対象です。
+
+## 関連ルール [#related-rules]
+
+- [`member-ordering`](/rules/member-ordering)

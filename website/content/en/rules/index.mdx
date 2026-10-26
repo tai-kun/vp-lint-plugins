@@ -28,7 +28,7 @@ export default defineConfig({
 Reference each rule as `tai-kun/<rule-name>`. Most rules only insert minimal whitespace and leave final formatting to Oxfmt.
 
 :::note
-`jsdoc-tag-order`, `jsdoc-param-order`, and `member-ordering` are report-only and do not auto-fix.
+`jsdoc-tag-order`, `jsdoc-param-order`, `member-ordering`, and `explicit-member-accessibility` are report-only and do not auto-fix.
 :::
 
 ## Comments [#comments]
@@ -77,10 +77,11 @@ Reference each rule as `tai-kun/<rule-name>`. Most rules only insert minimal whi
 
 ## Classes and functions [#classes]
 
-| Rule                                                                  | Description                                                                        | Auto-fix |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------- |
-| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent) | Require overload signatures to be adjacent to each other and their implementation. | Yes      |
-| [`member-ordering`](/rules/member-ordering)                           | Enforce a consistent order of class members.                                       | No       |
+| Rule                                                                    | Description                                                                        | Auto-fix |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------- |
+| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)   | Require overload signatures to be adjacent to each other and their implementation. | Yes      |
+| [`member-ordering`](/rules/member-ordering)                             | Enforce a consistent order of class members.                                       | No       |
+| [`explicit-member-accessibility`](/rules/explicit-member-accessibility) | Require accessibility modifiers for class members except `#` private members.      | No       |
 
 ## Tests [#tests]
 

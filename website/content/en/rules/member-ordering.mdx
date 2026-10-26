@@ -6,7 +6,7 @@ description: Enforce a consistent order of class members.
 - Rule ID: `tai-kun/member-ordering`
 - Auto-fix: No
 
-Requires class members in the order static fields → static blocks → instance fields → constructor → static methods → instance methods.
+Requires class members in the order public static fields → protected static fields → private static fields → static blocks → public instance fields → protected instance fields → private instance fields → constructor → public static methods → protected static methods → private static methods → public instance methods → protected instance methods → private instance methods.
 
 ## Configuration [#configuration]
 
@@ -40,7 +40,15 @@ class Service {
 class Service {
   static instances = 0;
 
+  protected static cache = new Map();
+
+  private static registry = new Set();
+
   value = 1;
+
+  protected options = {};
+
+  #internal = 0;
 
   constructor() {}
 
@@ -48,7 +56,13 @@ class Service {
     return new Service();
   }
 
+  protected static load() {}
+
   run() {}
+
+  protected stop() {}
+
+  #cleanup() {}
 }
 ```
 
@@ -56,7 +70,9 @@ class Service {
 
 - This rule reports only; it does not auto-fix.
 - Index signatures are ignored.
-- Access modifiers (public/protected/private) do not affect the order.
+- Within fields and methods, require `public` → `protected` → `private`. Missing modifiers are treated as `public`.
+- `#` private fields and methods are treated as `private`.
+- Constructors form a single group regardless of accessibility.
 - Getters and setters are treated as methods.
 
 ## Related rules [#related-rules]

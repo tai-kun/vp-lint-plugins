@@ -1,0 +1,61 @@
+---
+title: explicit-member-accessibility
+description: Require accessibility modifiers for class members except `#` private members.
+---
+
+- Rule ID: `tai-kun/explicit-member-accessibility`
+- Auto-fix: No
+
+Requires one of `public` / `protected` / `private` for class members except `#` private members. Applies to all fields, methods, and accessors, including constructors.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/explicit-member-accessibility": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+class Service {
+  value = 1;
+
+  constructor() {}
+
+  run() {}
+}
+```
+
+### Valid [#valid]
+
+```ts
+class Service {
+  public value = 1;
+
+  #internal = 0;
+
+  public constructor() {}
+
+  public run() {}
+
+  protected stop() {}
+
+  private reset() {}
+}
+```
+
+## Notes [#notes]
+
+- This rule reports only; it does not auto-fix.
+- `#` private fields and methods are ignored (they cannot have a modifier).
+- `static` blocks and index signatures are ignored.
+- Plain constructor parameters are ignored. Parameter properties with only `readonly` are reported (write `public readonly` instead).
+- Getters, setters, and `accessor` properties are checked.
+
+## Related rules [#related-rules]
+
+- [`member-ordering`](/rules/member-ordering)

@@ -28,7 +28,7 @@ export default defineConfig({
 各ルールは `tai-kun/<ルール名>` で指定します。ルールの多くはレイアウト用で、最小限の空白や改行を挿入したあと、最終的な整形は Oxfmt に任せます。
 
 :::note
-`jsdoc-tag-order`、`jsdoc-param-order`、`member-ordering` は報告のみで、自動修正は行いません。
+`jsdoc-tag-order`、`jsdoc-param-order`、`member-ordering`、`explicit-member-accessibility` は報告のみで、自動修正は行いません。
 :::
 
 ## コメント [#comments]
@@ -77,10 +77,11 @@ export default defineConfig({
 
 ## クラス・関数 [#classes]
 
-| ルール                                                                | 内容                                             | 自動修正 |
-| --------------------------------------------------------------------- | ------------------------------------------------ | -------- |
-| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent) | オーバーロード署名と実装の間の空行を禁止します。 | あり     |
-| [`member-ordering`](/rules/member-ordering)                           | クラスメンバーの順序を統一します。               | なし     |
+| ルール                                                                  | 内容                                                   | 自動修正 |
+| ----------------------------------------------------------------------- | ------------------------------------------------------ | -------- |
+| [`overload-signatures-adjacent`](/rules/overload-signatures-adjacent)   | オーバーロード署名と実装の間の空行を禁止します。       | あり     |
+| [`member-ordering`](/rules/member-ordering)                             | クラスメンバーの順序を統一します。                     | なし     |
+| [`explicit-member-accessibility`](/rules/explicit-member-accessibility) | `#` 以外のクラスメンバーにアクセス修飾子を要求します。 | なし     |
 
 ## テスト [#tests]
 

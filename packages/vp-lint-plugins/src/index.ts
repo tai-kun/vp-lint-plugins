@@ -1,6 +1,7 @@
 export { default as blankLine } from "./rules/blank-line.js";
 export { default as commentJapaneseSpacing } from "./rules/comment-japanese-spacing.js";
 export { default as commentOneSentencePerLine } from "./rules/comment-one-sentence-per-line.js";
+export { default as explicitMemberAccessibility } from "./rules/explicit-member-accessibility.js";
 export { default as jsdocParamOrder } from "./rules/jsdoc-param-order.js";
 export { default as jsdocTagLines } from "./rules/jsdoc-tag-lines.js";
 export { default as jsdocTagOrder } from "./rules/jsdoc-tag-order.js";

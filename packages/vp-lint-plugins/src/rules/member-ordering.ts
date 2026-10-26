@@ -1,22 +1,54 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree } from "vite-plus/lint/plugins";
 
+type Accessibility = "public" | "protected" | "private";
+
 type MemberGroup =
-  | "static-field"
+  | "public-static-field"
+  | "protected-static-field"
+  | "private-static-field"
   | "static-block"
-  | "instance-field"
+  | "public-instance-field"
+  | "protected-instance-field"
+  | "private-instance-field"
   | "constructor"
-  | "static-method"
-  | "instance-method";
+  | "public-static-method"
+  | "protected-static-method"
+  | "private-static-method"
+  | "public-instance-method"
+  | "protected-instance-method"
+  | "private-instance-method";
 
 const MEMBER_GROUP_ORDER: Record<MemberGroup, number> = {
-  constructor: 3,
-  "static-block": 1,
-  "static-field": 0,
-  "static-method": 4,
-  "instance-field": 2,
-  "instance-method": 5,
+  constructor: 7,
+  "static-block": 3,
+  "public-static-field": 0,
+  "private-static-field": 2,
+  "public-static-method": 8,
+  "private-static-method": 10,
+  "public-instance-field": 4,
+  "private-instance-field": 6,
+  "protected-static-field": 1,
+  "public-instance-method": 11,
+  "private-instance-method": 13,
+  "protected-static-method": 9,
+  "protected-instance-field": 5,
+  "protected-instance-method": 12,
 };
+
+function getAccessibility(
+  member: ESTree.PropertyDefinition | ESTree.AccessorProperty | ESTree.MethodDefinition,
+): Accessibility {
+  if (member.key.type === "PrivateIdentifier") {
+    return "private";
+  }
+
+  if (member.accessibility === "protected" || member.accessibility === "private") {
+    return member.accessibility;
+  }
+
+  return "public";
+}
 
 function getMemberGroup(member: ESTree.ClassElement): MemberGroup | null {
   if (member.type === "StaticBlock") {
@@ -33,7 +65,11 @@ function getMemberGroup(member: ESTree.ClassElement): MemberGroup | null {
     member.type === "AccessorProperty" ||
     member.type === "TSAbstractAccessorProperty"
   ) {
-    return member.static ? "static-field" : "instance-field";
+    const accessibility = getAccessibility(member);
+
+    return member.static
+      ? (`${accessibility}-static-field` as const)
+      : (`${accessibility}-instance-field` as const);
   }
 
   if (member.type === "MethodDefinition" || member.type === "TSAbstractMethodDefinition") {
@@ -41,25 +77,29 @@ function getMemberGroup(member: ESTree.ClassElement): MemberGroup | null {
       return "constructor";
     }
 
-    return member.static ? "static-method" : "instance-method";
+    const accessibility = getAccessibility(member);
+
+    return member.static
+      ? (`${accessibility}-static-method` as const)
+      : (`${accessibility}-instance-method` as const);
   }
 
   return null;
 }
 
 /**
- * クラスメンバーを「static フィールド → static ブロック → インスタンスフィールド → constructor → static メソッド → インスタンスメソッド」の順に要求します。
+ * クラスメンバーを「public static フィールド → protected static フィールド → private static フィールド → static ブロック → public インスタンスフィールド → protected インスタンスフィールド → private インスタンスフィールド → constructor → public static メソッド → protected static メソッド → private static メソッド → public インスタンスメソッド → protected インスタンスメソッド → private インスタンスメソッド」の順に要求します。`#` によるプライベートは private として扱います。
  */
 const memberOrdering = defineRule({
   meta: {
     docs: {
       description:
-        "Require class members to be ordered as static fields, static blocks, instance fields, constructor, static methods, and instance methods.",
+        "Require class members to be ordered as public static fields, protected static fields, private static fields, static blocks, public instance fields, protected instance fields, private instance fields, constructor, public static methods, protected static methods, private static methods, public instance methods, protected instance methods, and private instance methods.",
     },
     type: "suggestion",
     messages: {
       order:
-        "Class members must be ordered as static fields, static blocks, instance fields, constructor, static methods, and instance methods.",
+        "Class members must be ordered as public static fields, protected static fields, private static fields, static blocks, public instance fields, protected instance fields, private instance fields, constructor, public static methods, protected static methods, private static methods, public instance methods, protected instance methods, and private instance methods.",
     },
   },
   create(context) {

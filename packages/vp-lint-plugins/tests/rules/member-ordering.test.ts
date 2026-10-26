@@ -38,6 +38,40 @@ class A {
   a = 1;
 }
     `,
+    `
+class A {
+  public static a = 1;
+  protected static b = 2;
+  private static c = 3;
+  static #d = 4;
+
+  static {}
+
+  public e = 1;
+  protected f = 2;
+  private g = 3;
+  #h = 4;
+
+  constructor() {}
+
+  public static i() {}
+  protected static j() {}
+  private static k() {}
+  static #l() {}
+
+  public m() {}
+  protected n() {}
+  private o() {}
+  #p() {}
+}
+    `,
+    `
+class A {
+  public accessor a = 1;
+  protected accessor b = 2;
+  private accessor c = 3;
+}
+    `,
   ],
   invalid: [
     {
@@ -76,6 +110,66 @@ class A {
   a() {}
 
   b = 1;
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  private a = 1;
+
+  public b = 2;
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  #a = 1;
+
+  public b = 2;
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  protected a = 1;
+
+  public b = 2;
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  private a() {}
+
+  public b() {}
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  static #a = 1;
+
+  static b = 2;
+}
+      `,
+      errors: [{ messageId: "order" }],
+    },
+    {
+      code: `
+class A {
+  static {}
+
+  static a = 1;
 }
       `,
       errors: [{ messageId: "order" }],
