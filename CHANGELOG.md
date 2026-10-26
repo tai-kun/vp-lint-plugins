@@ -1,5 +1,14 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.8
+
+### バグ修正
+
+- 位置情報のないコメントで全ルールがクラッシュする問題を修正 ([872a70f](https://github.com/tai-kun/vp-lint-plugins/commit/872a70f40245339ea7853bfeb20735bb23e588ba))
+- 値が null のコメントで blank-line がクラッシュする問題を修正 ([807ff3d](https://github.com/tai-kun/vp-lint-plugins/commit/807ff3d05e0b5939dac55602a2d0d9f80ed96cd9))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.7...@tai-kun/vp-lint-plugins@0.0.8
+
 ## @tai-kun/vp-lint-plugins@0.0.7
 
 ### 新機能
