@@ -1,5 +1,7 @@
 import type { Fix, Fixer, ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
+
 /**
  * 文の配列を持つ親から、その文が属する配列を取得します。
  */
@@ -74,6 +76,7 @@ function getInsertionTarget(
       .getAllComments()
       .find(
         (comment) =>
+          hasCommentPosition(comment) &&
           comment.range[0] >= node.range[1] &&
           comment.range[1] <= nextStatement.range[0] &&
           comment.loc.start.line > node.loc.end.line,

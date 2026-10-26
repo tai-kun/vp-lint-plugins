@@ -1,6 +1,8 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Fix, Comment } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
+
 const DECORATIVE_LINE = /^[-=*#_~+]{3,}$/u;
 
 function isWhitespace(char: string | undefined): boolean {
@@ -110,6 +112,10 @@ const spacedComment = defineRule({
     return {
       Program(): void {
         for (const comment of sourceCode.getAllComments()) {
+          if (!hasCommentPosition(comment)) {
+            continue;
+          }
+
           if (comment.type === "Line") {
             checkLineComment(comment, sourceCode.getText(comment));
             continue;

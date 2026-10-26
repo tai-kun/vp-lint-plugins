@@ -1,6 +1,6 @@
 import type { ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
-import { isFence } from "./_comment-utils.js";
+import { isFence, hasCommentPosition } from "./_comment-utils.js";
 
 interface JSDocLine {
   content: string;
@@ -154,7 +154,9 @@ function getNodeStart(node: ESTree.Node): number {
  */
 function getNodeJSDoc(node: ESTree.Node, sourceCode: SourceCode): Comment | null {
   const start = getNodeStart(node);
-  const comment = sourceCode.getAllComments().findLast((candidate) => candidate.range[1] <= start);
+  const comment = sourceCode
+    .getAllComments()
+    .findLast((candidate) => hasCommentPosition(candidate) && candidate.range[1] <= start);
 
   if (comment === null || comment === undefined || comment.type !== "Block") {
     return null;

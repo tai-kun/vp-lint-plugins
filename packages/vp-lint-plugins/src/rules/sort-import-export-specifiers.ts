@@ -1,6 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
 import { compareNames } from "./_object-sort-utils.js";
 
 interface SpecifierUnit {
@@ -35,7 +36,12 @@ function hasUnsafeComment(
 ): boolean {
   const comments = sourceCode
     .getAllComments()
-    .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
+    .filter(
+      (comment) =>
+        hasCommentPosition(comment) &&
+        comment.range[0] >= node.range[0] &&
+        comment.range[1] <= node.range[1],
+    );
 
   return comments.some(
     (comment) =>

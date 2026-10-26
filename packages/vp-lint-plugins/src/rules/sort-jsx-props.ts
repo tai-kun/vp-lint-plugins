@@ -1,6 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
 import { compareNames } from "./_object-sort-utils.js";
 
 interface AttributeUnit {
@@ -63,7 +64,9 @@ function hasCommentBetweenAttributes(
 
     return comments.some(
       (comment) =>
-        comment.range[0] >= attribute.range[1] && comment.range[1] <= nextAttribute.range[0],
+        hasCommentPosition(comment) &&
+        comment.range[0] >= attribute.range[1] &&
+        comment.range[1] <= nextAttribute.range[0],
     );
   });
 }

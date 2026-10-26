@@ -1,5 +1,6 @@
 import { defineRule } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
 import { getJSDocLines, hasExampleOrFence } from "./_jsdoc-utils.js";
 
 const TAG_ORDER: Record<string, number> = {
@@ -37,6 +38,10 @@ const jsdocTagOrder = defineRule({
     return {
       "Program:exit"(): void {
         for (const comment of sourceCode.getAllComments()) {
+          if (!hasCommentPosition(comment)) {
+            continue;
+          }
+
           if (comment.type !== "Block") {
             continue;
           }

@@ -1,6 +1,8 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
+
 interface NamedSpecifier {
   local: string;
   text: string;
@@ -53,6 +55,7 @@ function hasUnsafeComment(
 
   return comments.some(
     (comment) =>
+      hasCommentPosition(comment) &&
       comment.range[0] >= first.range[0] &&
       comment.range[1] <= last.range[1] &&
       !specifierRanges.some(

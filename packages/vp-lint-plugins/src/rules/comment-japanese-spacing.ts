@@ -8,6 +8,7 @@ import {
   isCodeLike,
   isDirective,
   getLineGroupInfos,
+  hasCommentPosition,
   getCommentLineInfos,
 } from "./_comment-utils.js";
 
@@ -244,6 +245,10 @@ const commentJapaneseSpacing = defineRule({
         }
 
         for (const comment of comments) {
+          if (!hasCommentPosition(comment)) {
+            continue;
+          }
+
           if (comment.type === "Line") {
             const previous = lineGroup.at(-1);
 

@@ -12,6 +12,7 @@ import {
   isSentenceEnd,
   isListOrHeading,
   getLineGroupInfos,
+  hasCommentPosition,
   getCommentLineInfos,
   isSkippableProseLine,
 } from "./_comment-utils.js";
@@ -236,6 +237,10 @@ const commentOneSentencePerLine = defineRule({
         }
 
         for (const comment of comments) {
+          if (!hasCommentPosition(comment)) {
+            continue;
+          }
+
           if (comment.type === "Line") {
             const previous = lineGroup.at(-1);
 

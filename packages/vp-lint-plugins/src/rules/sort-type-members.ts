@@ -1,6 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Fix, ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
 import { compareNames } from "./_object-sort-utils.js";
 
 interface MemberUnit {
@@ -59,7 +60,12 @@ function getUnits(node: ESTree.TSTypeLiteral, sourceCode: SourceCode): MemberUni
   const lineStarts = getLineStarts(source);
   const comments = sourceCode
     .getAllComments()
-    .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
+    .filter(
+      (comment) =>
+        hasCommentPosition(comment) &&
+        comment.range[0] >= node.range[0] &&
+        comment.range[1] <= node.range[1],
+    );
   const units: MemberUnit[] = [];
   let previousEnd = node.range[0] + 1;
 

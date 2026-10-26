@@ -2,6 +2,7 @@ import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree, Context, SourceCode } from "vite-plus/lint/plugins";
 
 import { getNextStatement, getRemoveBlankLineFix } from "./_blank-line-utils.js";
+import { hasCommentPosition } from "./_comment-utils.js";
 
 function getFunction(node: ESTree.Node): ESTree.Function | null {
   if (node.type === "FunctionDeclaration" || node.type === "TSDeclareFunction") {
@@ -44,7 +45,12 @@ function hasCommentBetween(
 ): boolean {
   return sourceCode
     .getAllComments()
-    .some((comment) => comment.range[0] >= previous.range[1] && comment.range[1] <= next.range[0]);
+    .some(
+      (comment) =>
+        hasCommentPosition(comment) &&
+        comment.range[0] >= previous.range[1] &&
+        comment.range[1] <= next.range[0],
+    );
 }
 
 function reportIfSeparated(

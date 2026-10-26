@@ -1,5 +1,7 @@
 import type { ESTree, Comment, SourceCode } from "vite-plus/lint/plugins";
 
+import { hasCommentPosition } from "./_comment-utils.js";
+
 type SortableObject = ESTree.ObjectExpression | ESTree.ObjectPattern;
 
 type SortableProperty = SortableObject["properties"][number];
@@ -203,7 +205,12 @@ function getSortPlan(
   const lineStarts = getLineStarts(source);
   const comments = sourceCode
     .getAllComments()
-    .filter((comment) => comment.range[0] >= node.range[0] && comment.range[1] <= node.range[1]);
+    .filter(
+      (comment) =>
+        hasCommentPosition(comment) &&
+        comment.range[0] >= node.range[0] &&
+        comment.range[1] <= node.range[1],
+    );
   const firstProperty = node.properties[0];
 
   if (firstProperty === undefined) {

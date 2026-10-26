@@ -83,6 +83,22 @@ function isSentenceEnd(text: string): boolean {
 }
 
 /**
+ * コメントの位置情報（range と loc）が利用可能かどうかを返します。
+ *
+ * 実行時には null の位置情報を保持するコメントを受け取る場合があるため、コメントの range や loc に触れる前に確認します。
+ */
+function hasCommentPosition(comment: Comment): boolean {
+  return (
+    comment !== null &&
+    comment !== undefined &&
+    comment.range !== null &&
+    comment.range !== undefined &&
+    comment.loc !== null &&
+    comment.loc !== undefined
+  );
+}
+
+/**
  * 散文として扱わない行かどうかを返します。
  */
 function isSkippableProseLine(text: string): boolean {
@@ -215,6 +231,7 @@ export {
   isSentenceEnd,
   isListOrHeading,
   getLineGroupInfos,
+  hasCommentPosition,
   getCommentLineInfos,
   isSkippableProseLine,
 };
