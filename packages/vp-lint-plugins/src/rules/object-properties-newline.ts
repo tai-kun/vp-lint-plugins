@@ -9,44 +9,28 @@ import { getSortPlan } from "./_object-sort-utils.js";
  * `ObjectExpression` と JSON パーサーの `JSONObjectExpression` の両方を受け付けます。
  */
 interface MultilineTarget {
-  /**
-   * オブジェクトの位置情報です。
-   */
+  /** オブジェクトの位置情報です。 */
   loc: {
-    /**
-     * 開始位置です。
-     */
+    /** 開始位置です。 */
     start: {
-      /**
-       * 1 始まりの行番号です。
-       */
+      /** 1 始まりの行番号です。 */
       line: number;
     };
   };
 
-  /**
-   * プロパティーの一覧です。
-   */
+  /** プロパティーの一覧です。 */
   properties: readonly {
-    /**
-     * プロパティーの位置情報です。
-     */
+    /** プロパティーの位置情報です。 */
     loc: {
-      /**
-       * 開始位置です。
-       */
+      /** 開始位置です。 */
       start: {
-        /**
-         * 1 始まりの行番号です。
-         */
+        /** 1 始まりの行番号です。 */
         line: number;
       };
     };
   }[];
 
-  /**
-   * オブジェクトの範囲です。
-   */
+  /** オブジェクトの範囲です。 */
   range: readonly [number, number];
 }
 

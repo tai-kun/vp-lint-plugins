@@ -98,9 +98,7 @@ function hasCommentPosition(comment: Comment): boolean {
   );
 }
 
-/**
- * 散文として扱わない行かどうかを返します。
- */
+/** 散文として扱わない行かどうかを返します。 */
 function isSkippableProseLine(text: string): boolean {
   const trimmed = text.trim();
 

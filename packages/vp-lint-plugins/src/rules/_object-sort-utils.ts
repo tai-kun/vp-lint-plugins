@@ -7,14 +7,10 @@ type SortableObject = ESTree.ObjectExpression | ESTree.ObjectPattern;
 type SortableProperty = SortableObject["properties"][number];
 
 interface SortPlanOptions {
-  /**
-   * 末尾の RestElement を許可するかどうかです。
-   */
+  /** 末尾の RestElement を許可するかどうかです。 */
   allowRest?: boolean;
 
-  /**
-   * 1 行のオブジェクトを複数行に整形するかどうかです。
-   */
+  /** 1 行のオブジェクトを複数行に整形するかどうかです。 */
   forceMultiline?: boolean;
 }
 

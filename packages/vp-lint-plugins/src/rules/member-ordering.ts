@@ -87,9 +87,7 @@ function getMemberGroup(member: ESTree.ClassElement): MemberGroup | null {
   return null;
 }
 
-/**
- * クラスメンバーを「public static フィールド → protected static フィールド → private static フィールド → static ブロック → public インスタンスフィールド → protected インスタンスフィールド → private インスタンスフィールド → constructor → public static メソッド → protected static メソッド → private static メソッド → public インスタンスメソッド → protected インスタンスメソッド → private インスタンスメソッド」の順に要求します。`#` によるプライベートは private として扱います。
- */
+/** クラスメンバーを「public static フィールド → protected static フィールド → private static フィールド → static ブロック → public インスタンスフィールド → protected インスタンスフィールド → private インスタンスフィールド → constructor → public static メソッド → protected static メソッド → private static メソッド → public インスタンスメソッド → protected インスタンスメソッド → private インスタンスメソッド」の順に要求します。`#` によるプライベートは private として扱います。 */
 const memberOrdering = defineRule({
   meta: {
     docs: {

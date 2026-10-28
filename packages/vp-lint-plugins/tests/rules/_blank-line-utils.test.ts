@@ -14,9 +14,7 @@ function createBlockComment(value: unknown): Comment {
   } as unknown as Comment;
 }
 
-/**
- * 指定した開始行と終了行を持つ位置情報を作成します。
- */
+/** 指定した開始行と終了行を持つ位置情報を作成します。 */
 function createLoc(startLine: number, endLine: number): Comment["loc"] {
   return {
     end: {
@@ -30,9 +28,7 @@ function createLoc(startLine: number, endLine: number): Comment["loc"] {
   };
 }
 
-/**
- * 指定した範囲と終了行を持つ文を作成します。
- */
+/** 指定した範囲と終了行を持つ文を作成します。 */
 function createStatement(start: number, end: number, endLine: number): ESTree.Node {
   return {
     loc: createLoc(1, endLine),
@@ -40,9 +36,7 @@ function createStatement(start: number, end: number, endLine: number): ESTree.No
   } as unknown as ESTree.Node;
 }
 
-/**
- * 指定した範囲と開始行を持つブロックコメントを作成します。
- */
+/** 指定した範囲と開始行を持つブロックコメントを作成します。 */
 function createPositionedComment(start: number, end: number, line: number): Comment {
   return {
     loc: createLoc(line, line),
@@ -51,9 +45,7 @@ function createPositionedComment(start: number, end: number, line: number): Comm
   } as unknown as Comment;
 }
 
-/**
- * 指定したコメント配列を返す最小の SourceCode を作成します。
- */
+/** 指定したコメント配列を返す最小の SourceCode を作成します。 */
 function createSourceCode(comments: Comment[]): SourceCode {
   return { getAllComments: () => comments } as unknown as SourceCode;
 }

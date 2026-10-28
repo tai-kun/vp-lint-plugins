@@ -1,14 +1,10 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { Fix, ESTree } from "vite-plus/lint/plugins";
 
-/**
- * 禁止する catch 引数名（小文字で比較します）。
- */
+/** 禁止する catch 引数名（小文字で比較します）。 */
 const BANNED_NAMES: ReadonlySet<string> = new Set(["e", "err", "error", "reason"]);
 
-/**
- * 診断対象の名前かどうかを返します。
- */
+/** 診断対象の名前かどうかを返します。 */
 function isBannedName(name: string): boolean {
   return BANNED_NAMES.has(name.toLowerCase());
 }

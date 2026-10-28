@@ -1,9 +1,7 @@
 import { RuleTester } from "vite-plus/lint/plugins-dev";
 import { test, describe } from "vite-plus/test";
 
-/**
- * RuleTester のテスト実行を Vitest に委譲します。
- */
+/** RuleTester のテスト実行を Vitest に委譲します。 */
 function configureRuleTester(): void {
   RuleTester.describe = describe;
   RuleTester.it = test;

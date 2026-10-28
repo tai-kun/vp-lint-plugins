@@ -50,23 +50,15 @@ const value = {
   ],
 });
 
-/**
- * `JSONObjectExpression` 検証用の報告形式です。
- */
+/** `JSONObjectExpression` 検証用の報告形式です。 */
 interface JsonReport {
-  /**
-   * 修正後のテキストです。
-   */
+  /** 修正後のテキストです。 */
   fixText: string;
 
-  /**
-   * 修正範囲です。
-   */
+  /** 修正範囲です。 */
   fixRange: readonly [number, number];
 
-  /**
-   * 報告の識別子です。
-   */
+  /** 報告の識別子です。 */
   messageId: string;
 }
 

@@ -91,9 +91,7 @@ function checkFunction(
   }
 }
 
-/**
- * `@param` タグが関数の引数の順序に従っていることを要求します。
- */
+/** `@param` タグが関数の引数の順序に従っていることを要求します。 */
 const jsdocParamOrder = defineRule({
   meta: {
     docs: {

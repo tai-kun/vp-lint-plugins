@@ -38,9 +38,7 @@ function stripType(value: string): string {
   return value;
 }
 
-/**
- * `@param` 行からパラメーター名を取得します。
- */
+/** `@param` 行からパラメーター名を取得します。 */
 function getParamName(content: string): string | null {
   let value = content.trimStart();
 
@@ -149,9 +147,7 @@ function getNodeStart(node: ESTree.Node): number {
   return node.range[0];
 }
 
-/**
- * ノードに付いている JSDoc コメントを返します。
- */
+/** ノードに付いている JSDoc コメントを返します。 */
 function getNodeJSDoc(node: ESTree.Node, sourceCode: SourceCode): Comment | null {
   const start = getNodeStart(node);
   const comment = sourceCode

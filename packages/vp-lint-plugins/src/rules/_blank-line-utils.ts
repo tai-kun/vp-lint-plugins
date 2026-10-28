@@ -2,9 +2,7 @@ import type { Fix, Fixer, ESTree, Comment, SourceCode } from "vite-plus/lint/plu
 
 import { hasCommentPosition } from "./_comment-utils.js";
 
-/**
- * 文の配列を持つ親から、その文が属する配列を取得します。
- */
+/** 文の配列を持つ親から、その文が属する配列を取得します。 */
 function getStatementBody(node: ESTree.Node): readonly ESTree.Node[] | null {
   const { parent } = node;
 
@@ -137,9 +135,7 @@ function getBlankLineFix(
   return fixer.insertTextBeforeRange([lineEnd, lineEnd + 1], "\n");
 }
 
-/**
- * 指定したノードと対象の間の空行を削除します。
- */
+/** 指定したノードと対象の間の空行を削除します。 */
 function getRemoveBlankLineFix(
   fixer: Fixer,
   sourceCode: SourceCode,

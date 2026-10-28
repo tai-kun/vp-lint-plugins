@@ -3,16 +3,12 @@ import { test, describe } from "vite-plus/test";
 
 import { getNodeJSDoc } from "../../src/rules/_jsdoc-utils.js";
 
-/**
- * 指定した範囲を持つノードを作成します。
- */
+/** 指定した範囲を持つノードを作成します。 */
 function createNode(start: number, end: number): ESTree.Node {
   return { range: [start, end] } as unknown as ESTree.Node;
 }
 
-/**
- * 指定した範囲と終了行を持つブロックコメントを作成します。
- */
+/** 指定した範囲と終了行を持つブロックコメントを作成します。 */
 function createComment(start: number, end: number, endLine: number): Comment {
   return {
     loc: {

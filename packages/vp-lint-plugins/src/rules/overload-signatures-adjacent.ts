@@ -75,9 +75,7 @@ function reportIfSeparated(
   });
 }
 
-/**
- * オーバーロード署名と実装の間に空行を入れないようにします。
- */
+/** オーバーロード署名と実装の間に空行を入れないようにします。 */
 const overloadSignaturesAdjacent = defineRule({
   meta: {
     docs: {

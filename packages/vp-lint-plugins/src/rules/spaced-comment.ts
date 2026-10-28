@@ -25,9 +25,7 @@ function isExemptBlockComment(raw: string): boolean {
   return raw.startsWith("/*!") || raw.startsWith("/*#");
 }
 
-/**
- * コメントの開始記号の直後と終了記号の直前に空白を要求します。
- */
+/** コメントの開始記号の直後と終了記号の直前に空白を要求します。 */
 const spacedComment = defineRule({
   meta: {
     docs: {

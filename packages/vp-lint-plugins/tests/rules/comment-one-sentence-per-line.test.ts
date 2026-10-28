@@ -88,9 +88,24 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
     `,
     `
     /**
-     * これは文の途中
+     * これは文です。
+     *
+     * これは説明です。
      */
     `,
+    `
+    /**
+     * これは文です。
+     * これも文です。
+     */
+    `,
+    `
+    /**
+     * これは文です。
+     *
+     */
+    `,
+    "/** これは文です。 */",
     "/*#__PURE__*/",
   ],
   invalid: [
@@ -102,11 +117,9 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
        */
       const a = 1;
       `,
-      errors: [{ messageId: "oneSentence" }],
+      errors: [{ messageId: "singleLine" }],
       output: `
-      /**
-       * これは文の途中で改行されています。
-       */
+      /** これは文の途中で改行されています。 */
       const a = 1;
       `,
     },
@@ -118,11 +131,75 @@ ruleTester.run("comment-one-sentence-per-line", commentOneSentencePerLine, {
        */
       const a = 1;
       `,
-      errors: [{ messageId: "oneSentence" }],
+      errors: [{ messageId: "singleLine" }],
       output: `
+      /** This is a sentence. */
+      const a = 1;
+      `,
+    },
+    {
+      code: `
       /**
-       * This is a sentence.
+       * これは文です。
        */
+      const a = 1;
+      `,
+      errors: [{ messageId: "singleLine" }],
+      output: `
+      /** これは文です。 */
+      const a = 1;
+      `,
+    },
+    {
+      code: `
+      /**
+       * これは文の途中
+       */
+      const a = 1;
+      `,
+      errors: [{ messageId: "singleLine" }],
+      output: `
+      /** これは文の途中 */
+      const a = 1;
+      `,
+    },
+    {
+      code: `
+      /** This is a
+       * sentence. */
+      const a = 1;
+      `,
+      errors: [{ messageId: "singleLine" }],
+      output: `
+      /** This is a sentence. */
+      const a = 1;
+      `,
+    },
+    {
+      code: `
+      /**
+       * This is a sentence,
+       * and it continues.
+       */
+      const a = 1;
+      `,
+      errors: [{ messageId: "singleLine" }],
+      output: `
+      /** This is a sentence, and it continues. */
+      const a = 1;
+      `,
+    },
+    {
+      code: `
+      /**
+       * これは文の途中で、
+       * 改行されています。
+       */
+      const a = 1;
+      `,
+      errors: [{ messageId: "singleLine" }],
+      output: `
+      /** これは文の途中で、改行されています。 */
       const a = 1;
       `,
     },
@@ -223,8 +300,13 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
       code: `
       /**
        * これは文です。
+       * これも文です。
        */
       `,
+      options: [{ requireEndPunctuation: true }],
+    },
+    {
+      code: "/** これは文です。 */",
       options: [{ requireEndPunctuation: true }],
     },
     {
@@ -236,11 +318,7 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
       options: [{ requireEndPunctuation: true }],
     },
     {
-      code: `
-      /**
-       * [API Reference](https://example.com/)
-       */
-      `,
+      code: "/** [API Reference](https://example.com/) */",
       options: [{ requireEndPunctuation: true }],
     },
   ],
@@ -260,8 +338,10 @@ ruleTester.run("comment-one-sentence-per-line (requireEndPunctuation)", commentO
        * これは文です
        */
       `,
-      errors: [{ messageId: "missingEndPunctuation" }],
-      output: null,
+      errors: [{ messageId: "singleLine" }, { messageId: "missingEndPunctuation" }],
+      output: `
+      /** これは文です */
+      `,
       options: [{ requireEndPunctuation: true }],
     },
     {

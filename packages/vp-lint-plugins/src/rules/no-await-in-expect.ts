@@ -1,9 +1,7 @@
 import { defineRule } from "vite-plus/lint/plugins";
 import type { ESTree } from "vite-plus/lint/plugins";
 
-/**
- * 括弧で包まれた式を剥がして中身を返します。
- */
+/** 括弧で包まれた式を剥がして中身を返します。 */
 function unwrapParenthesized(node: ESTree.Expression): ESTree.Expression {
   let current = node;
 
@@ -14,9 +12,7 @@ function unwrapParenthesized(node: ESTree.Expression): ESTree.Expression {
   return current;
 }
 
-/**
- * `expect(...)` から `.resolves` / `.rejects` に続くチェーンかどうかを返します。
- */
+/** `expect(...)` から `.resolves` / `.rejects` に続くチェーンかどうかを返します。 */
 function usesResolvesStyle(node: ESTree.CallExpression): boolean {
   let current: ESTree.Node = node;
   let parent: ESTree.Node | undefined = node.parent;

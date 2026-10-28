@@ -91,9 +91,7 @@ function isProtected(offset: number, ranges: ProtectedRanges): boolean {
   );
 }
 
-/**
- * 日本語と半角文字の間に半角スペースを 1 つ挿入します。
- */
+/** 日本語と半角文字の間に半角スペースを 1 つ挿入します。 */
 function findSpacingEdits(text: string): SpacingEdit[] {
   const edits: SpacingEdit[] = [];
   const protectedRanges = getProtectedRanges(text);

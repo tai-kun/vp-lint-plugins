@@ -1,12 +1,12 @@
 ---
 title: comment-one-sentence-per-line
-description: Enforce one sentence per comment line, optionally requiring ending punctuation.
+description: Enforce one sentence per comment line, collapse simple block comments to one line, and optionally require ending punctuation.
 ---
 
 - Rule ID: `tai-kun/comment-one-sentence-per-line`
-- Auto-fix: Partial (join only)
+- Auto-fix: Partial (line joins and single-line block comments)
 
-Joins sentences that wrap across several comment lines. When `requireEndPunctuation` is enabled, prose lines that do not end with punctuation such as `。` or `.` are also reported. Lines ending with `:` or `：` are treated as sentence ends.
+Joins sentences that wrap across several comment lines. Simple `/** */` block comments without JSDoc tags that contain a single sentence are collapsed to one line. When `requireEndPunctuation` is enabled, prose lines that do not end with punctuation such as `。` or `.` are also reported. Lines ending with `:` or `：` are treated as sentence ends.
 
 ## Configuration [#configuration]
 
@@ -31,17 +31,28 @@ Add the rule to `lint.rules` in `vite.config.ts` to enable it.
 // wraps across two lines
 ```
 
+```ts
+/**
+ * This is a sentence.
+ */
+```
+
 ### Valid [#valid]
 
 ```ts
 // This is a sentence that wraps across two lines.
 ```
 
+```ts
+/** This is a sentence. */
+```
+
 ## Notes [#notes]
 
 - Directives, JSDoc tags, lists, code, code fences, and `@example` blocks are ignored.
 - Lines ending with `:` or `：` (such as label lines) are treated as sentence ends and are not joined with the next line.
-- Joining lines is auto-fixed, but missing ending punctuation is not.
+- Simple block comments without JSDoc tags are collapsed to a single `/** ... */` line when they contain only one sentence. Comments with multiple sentences or blank lines are left unchanged.
+- Line joins and block comment collapsing are auto-fixed, but missing ending punctuation is not.
 - `requireEndPunctuation` defaults to `false`.
 
 ## Related rules [#related-rules]

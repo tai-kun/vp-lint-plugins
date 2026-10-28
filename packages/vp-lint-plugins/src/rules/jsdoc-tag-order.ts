@@ -18,9 +18,7 @@ const TAG_ORDER: Record<string, number> = {
 };
 const UNKNOWN_TAG_ORDER = 100;
 
-/**
- * JSDoc のタグの順序を統一します。
- */
+/** JSDoc のタグの順序を統一します。 */
 const jsdocTagOrder = defineRule({
   meta: {
     docs: {

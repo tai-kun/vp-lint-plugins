@@ -14,9 +14,7 @@ function getBlankPrefix(line: JSDocLine): string {
   return line.prefix.trimEnd();
 }
 
-/**
- * description とタグ、タググループの間の空行を揃えます。
- */
+/** description とタグ、タググループの間の空行を揃えます。 */
 const jsdocTagLines = defineRule({
   meta: {
     docs: {
