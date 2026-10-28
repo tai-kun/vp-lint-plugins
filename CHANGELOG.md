@@ -1,5 +1,13 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.11
+
+### 新機能
+
+- comment-one-sentence-per-lineで単純なブロックコメントを1行化する ([fd07848](https://github.com/tai-kun/vp-lint-plugins/commit/fd07848abea1e509ac8db18c26cafaa28cd647be))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.10...@tai-kun/vp-lint-plugins@0.0.11
+
 ## @tai-kun/vp-lint-plugins@0.0.10
 
 ### 新機能
