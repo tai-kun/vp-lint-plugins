@@ -1,5 +1,21 @@
 # Changelog
 
+## @tai-kun/vp-lint-plugins@0.0.12
+
+### 新機能
+
+- ReactのuseEffectを禁止するno-use-effectを追加 ([2541fd7](https://github.com/tai-kun/vp-lint-plugins/commit/2541fd77ccf49eb654cc6abd58649f45f367eb10))
+
+### バグ修正
+
+- ロックファイルを package.json に追随させる ([9af7f07](https://github.com/tai-kun/vp-lint-plugins/commit/9af7f07c7274a5ae73195c0ca1fd97e0424acfcb))
+
+### その他
+
+- パッケージを更新 ([153772e](https://github.com/tai-kun/vp-lint-plugins/commit/153772e8cf9fe53baf845b6580e9da8d6eadc897))
+
+**Full Changelog**: https://github.com/tai-kun/vp-lint-plugins/compare/@tai-kun/vp-lint-plugins@0.0.11...@tai-kun/vp-lint-plugins@0.0.12
+
 ## @tai-kun/vp-lint-plugins@0.0.11
 
 ### 新機能
