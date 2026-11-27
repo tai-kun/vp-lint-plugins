@@ -1,0 +1,60 @@
+---
+title: no-use-effect
+description: Disallow React's `useEffect`.
+---
+
+- Rule ID: `tai-kun/no-use-effect`
+- Auto-fix: No
+
+Reports code that uses React's `useEffect`. This covers direct references from `import { useEffect } from "react"` and `React.useEffect` through default or namespace imports.
+
+## Configuration [#configuration]
+
+Add the rule to `lint.rules` in `vite.config.ts` to enable it.
+
+```ts
+"tai-kun/no-use-effect": "error",
+```
+
+## Examples [#examples]
+
+### Invalid [#invalid]
+
+```ts
+import { useEffect } from "react";
+
+function App() {
+  useEffect(() => {
+    run();
+  }, []);
+}
+```
+
+```tsx
+import React from "react";
+
+function App() {
+  React.useEffect(() => {
+    run();
+  }, []);
+}
+```
+
+### Valid [#valid]
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return <button onClick={() => setCount((value) => value + 1)}>{count}</button>;
+}
+```
+
+## Notes [#notes]
+
+- This rule reports only; it does not auto-fix.
+- Functions with the same name imported from modules other than `react` are ignored.
+- Type-position references such as `typeof React.useEffect` are ignored.
+- Functions destructured from `React` (`const { useEffect } = React`) are not detected.

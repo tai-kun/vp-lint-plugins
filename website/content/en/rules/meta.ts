@@ -20,6 +20,7 @@ export default defineMeta({
     "overload-signatures-adjacent",
     "member-ordering",
     "no-await-in-expect",
+    "no-use-effect",
   ],
   title: "Rules",
 });

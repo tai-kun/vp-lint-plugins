@@ -1,0 +1,60 @@
+---
+title: no-use-effect
+description: "React の `useEffect` を禁止します。"
+---
+
+- ルール ID: `tai-kun/no-use-effect`
+- 自動修正: なし
+
+React の `useEffect` を使うコードを検出します。`import { useEffect } from "react"` による直接参照のほか、default / namespace import 経由の `React.useEffect` も対象です。
+
+## 設定 [#configuration]
+
+このルールを有効にするには、`vite.config.ts` の `lint.rules` に追加します。
+
+```ts
+"tai-kun/no-use-effect": "error",
+```
+
+## 例 [#examples]
+
+### 違反例 [#invalid]
+
+```ts
+import { useEffect } from "react";
+
+function App() {
+  useEffect(() => {
+    run();
+  }, []);
+}
+```
+
+```tsx
+import React from "react";
+
+function App() {
+  React.useEffect(() => {
+    run();
+  }, []);
+}
+```
+
+### 修正後 [#valid]
+
+```tsx
+import { useState } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return <button onClick={() => setCount((value) => value + 1)}>{count}</button>;
+}
+```
+
+## 注意 [#notes]
+
+- 報告のみで、自動修正は行いません。
+- `react` 以外のモジュールから import した同名の関数は対象外です。
+- `typeof React.useEffect` のような型位置での参照は対象外です。
+- 分割代入（`const { useEffect } = React`）で取り出した関数は検出しません。

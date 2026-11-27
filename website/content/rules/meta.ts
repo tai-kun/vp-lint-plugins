@@ -21,6 +21,7 @@ export default defineMeta({
     "member-ordering",
     "no-await-in-expect",
     "catch-param-name",
+    "no-use-effect",
   ],
   title: "ルール",
 });

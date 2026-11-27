@@ -11,6 +11,7 @@ import jsdocTagOrder from "./rules/jsdoc-tag-order.js";
 import memberOrdering from "./rules/member-ordering.js";
 import mergeImports from "./rules/merge-imports.js";
 import noAwaitInExpect from "./rules/no-await-in-expect.js";
+import noUseEffect from "./rules/no-use-effect.js";
 import objectPropertiesNewline from "./rules/object-properties-newline.js";
 import overloadSignaturesAdjacent from "./rules/overload-signatures-adjacent.js";
 import sortImportExportSpecifiers from "./rules/sort-import-export-specifiers.js";
@@ -25,6 +26,7 @@ export default definePlugin({
   rules: {
     "blank-line": blankLine,
     "merge-imports": mergeImports,
+    "no-use-effect": noUseEffect,
     "sort-jsx-props": sortJsxProps,
     "spaced-comment": spacedComment,
     "jsdoc-tag-lines": jsdocTagLines,
