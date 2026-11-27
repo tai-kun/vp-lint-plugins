@@ -27,8 +27,8 @@
     "build": "tsc --project ./.config/tsconfig.build.json"
   },
   "devDependencies": {
-    "@tsconfig/node24": "24.0.5",
-    "@tsconfig/strictest": "2.0.8",
+    "@tsconfig/node24": "24.0.6",
+    "@tsconfig/strictest": "2.0.9",
     "@types/node": "24.19.2",
     "@vitest/coverage-v8": "catalog:",
     "vite": "catalog:",
